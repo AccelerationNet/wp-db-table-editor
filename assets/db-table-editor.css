@@ -1,0 +1,17 @@
+.db-table-editor { border:1px solid black; min-height: 500px; margin:25px; 
+   overflow:auto;}
+.db-table-editor .delete { padding:0px; margin:0 3px; line-height:20px; height:20px;}
+
+.db-table-editor .slick-row.active > *,
+.db-table-editor .slick-row.selected > * {background-color: #DFD;}
+
+.db-table-editor .slick-row .slick-cell.selected,
+.db-table-editor .slick-row .slick-cell.active {background-color: #DDF;}
+
+.slick-header-column{font-weight:bold; color: #339;}
+
+.slick-headerrow-column.ui-state-default,.slick-headerrow-column.ui-state-default > input {background-color :#FFD;}
+.slick-headerrow-column.ui-state-default {padding:0px;box-sizing:border-box;
+-moz-box-sizing:border-box;}
+.slick-headerrow-column.ui-state-default > input {width:99%;box-sizing:border-box;
+-moz-box-sizing:border-box;}
