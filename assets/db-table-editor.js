@@ -175,12 +175,13 @@ DBTableEditor.onload = function(){
   var grid = DBTableEditor.grid = new Slick.Grid('.db-table-editor', dataView, columns, options);
   grid.setSelectionModel(new Slick.CellSelectionModel());
   var nextCell = function (args){
-    var ri = args.row || rows.length-1, ci = (args.cell || 0 )+1 ;
+    var ri = args.row === null ? rows.length-1 : args.row,
+        ci = args.cell=== null ? 1 : args.cell + 1 ;
     if(ci >= columns.length){
       ci=0;
       ri++;
     }
-    console.log("going to:", ri, ci, args);
+    //console.log("going to:", ri, ci, args);
     grid.gotoCell(ri, ci, true);
   };
 
