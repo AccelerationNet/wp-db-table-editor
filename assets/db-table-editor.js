@@ -142,8 +142,14 @@ DBTableEditor.onload = function(){
         c.editor = Slick.Editors.Date;
       }
       var maxLen = 0;
-      for(var j=0 ; j < 100 ; j++)
-        maxLen = Math.max(rows[j][c.field].toString().length, maxLen);
+      for(var j=0 ; j < 100 ; j++){
+        if(rows[j] && rows[j][c.field]){
+          maxLen = Math.max(rows[j][c.field].toString().length, maxLen);
+        }
+        else{
+          // console.log(j, rows[j], c.field, rows[j][c.field]);
+        }
+      }
       if(maxLen < 65) c.editor = Slick.Editors.Text;
       else c.editor = Slick.Editors.LongText;
     }

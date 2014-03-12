@@ -50,12 +50,21 @@ function dbte_get_data_table(){
   global $wpdb;
   $cur = dbte_current();
   if(!$cur){ return "null"; }
-  $rows = $cur->getData(array('type'=>ARRAY_N));
-  $columns = Array();
-  $cnames = $wpdb->get_col_info('name');
-  $ctypes = $wpdb->get_col_info('type');
-  for($i=0; $i < count($cnames) ; $i++){
-    $columns[]=Array('name'=>$cnames[$i], 'type'=>$ctypes[$i]);
+  $data = $cur->getData(array('type'=>ARRAY_N));
+  $rows = null;
+  $columns = null;
+  if(is_a($data, "DBTE_DataTable")){
+    $rows = $data->rows;
+    $columns = $data->columns;
+  }
+  else{
+    $rows = $data;
+    $columns = Array();
+    $cnames = $wpdb->get_col_info('name');
+    $ctypes = $wpdb->get_col_info('type');
+    for($i=0; $i < count($cnames) ; $i++){
+      $columns[]=Array('name'=>$cnames[$i], 'type'=>$ctypes[$i]);
+    }
   }
   return json_encode(Array('columns'=>$columns, 'rows'=>$rows));
 }
