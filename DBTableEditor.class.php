@@ -6,16 +6,16 @@ function add_db_table_editor($args){
   return $o;
 }
 class DBTableEditor {
-  var $table, $title, $dataFn, $id, $data, $permissions, $jsFile;
+  var $table, $title, $dataFn, $id, $data, $cap, $jsFile;
   function DBTableEditor($args){
-    $args = wp_parse_args($args, array('permissions'=>'edit_others_posts'));
+    $args = wp_parse_args($args, array('cap'=>'edit_others_posts'));
     $this->table=@$args['table'];
     $this->id = @$args['id'];
     if(!$this->id) $this->id = $this->table;
     $this->title = @$args['title'];
     if(!$this->title) $this->title = $this->table;
     $this->dataFn = @$args['dataFn'];
-    $this->permissions = @$args['permissions'];
+    $this->cap = @$args['cap'];
     $this->jsFile = @$args['jsFile'];
   }
   function getData($args){
