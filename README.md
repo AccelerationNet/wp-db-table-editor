@@ -42,7 +42,7 @@ if(function_exists('add_db_table_editor')){
 ```
 function dbTableEditorScripts(){
   wp_register_script('employee-table-extensions-js',
-    get_stylesheet_directory_uri().'/suspects-table.js',
+    get_stylesheet_directory_uri().'/employee-table.js',
     array('db-table-editor-js'));
 }
   add_action('db-table-editor_enqueue_scripts', 'dbTableEditorScripts');
