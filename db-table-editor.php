@@ -78,10 +78,10 @@ function dbte_scripts($hook){
     $base.'/assets/db-table-editor.css');
 
   wp_enqueue_script('jquery-event-drag', 
-    $base.'/assets/SlickGrid/jquery.event.drag.js',
+    $base.'/assets/jquery.event.drag.js',
     array('jquery'));
   wp_enqueue_script('jquery-event-drop', 
-    $base.'/assets/SlickGrid/jquery.event.drop.js',
+    $base.'/assets/jquery.event.drop.js',
     array('jquery-event-drag'));
   wp_enqueue_script('slick-core-js', 
     $base.'/assets/SlickGrid/slick.core.js', 
