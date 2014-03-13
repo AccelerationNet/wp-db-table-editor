@@ -51,7 +51,6 @@ DBTableEditor.save = function(){
     .success(DBTableEditor.saveCB)
     .error(DBTableEditor.saveFailCB);
 
-
 };
 
 DBTableEditor.undo = function () {
@@ -132,13 +131,13 @@ DBTableEditor.onload = function(){
 
   // init columns
   for( var i=0, c ; c=columns[i] ; i++){
-    columnMap[c.name] = i;
+    c.id=c.name.toLowerCase();
     c.field = i;
-    c.id=c.name;
     c.sortable = true;
+    columnMap[c.id] = i;
 
     if(c.id!="id" && !c.editor){
-      if(c.name.toLowerCase().search('date')>=0){
+      if(c.id.search('date')>=0){
         c.editor = Slick.Editors.Date;
       }
       var maxLen = 0;
@@ -218,7 +217,7 @@ DBTableEditor.onload = function(){
     var typedVal = function(c, r, n){
       var v = r[n];
       if(c.type == 'int') return Number(v);
-      else if(c.name.search('date')>=0) return new Date(v);
+      else if(c.id.search('date')>=0) return new Date(v);
       return v && v.toLowerCase();
     };
     var rowSorter = function (r1, r2) {
