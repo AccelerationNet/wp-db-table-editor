@@ -122,6 +122,10 @@ DBTableEditor.rowButtonFormatter = function(row, cell, value, columnDef, dataCon
   return out;
 };
 
+DBTableEditor.exportCSV = function(){
+  window.location=ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table;
+};
+
 DBTableEditor.onload = function(){
   //console.log('Loading db table');
   if(!DBTableEditor.data) DBTableEditor.data = DBTableEditorData;

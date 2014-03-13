@@ -51,21 +51,9 @@ function dbte_get_data_table(){
   $cur = dbte_current();
   if(!$cur){ return "null"; }
   $data = $cur->getData(array('type'=>ARRAY_N));
-  $rows = null;
-  $columns = null;
-  if(is_a($data, "DBTE_DataTable")){
-    $rows = $data->rows;
-    $columns = $data->columns;
-  }
-  else{
-    $rows = $data;
-    $columns = Array();
-    $cnames = $wpdb->get_col_info('name');
-    $ctypes = $wpdb->get_col_info('type');
-    for($i=0; $i < count($cnames) ; $i++){
-      $columns[]=Array('name'=>$cnames[$i], 'type'=>$ctypes[$i]);
-    }
-  }
+  if(!is_a($data, "DBTE_DataTable")) echo "DB-Table-Editor Cannot READ DATA SOURCE";
+  $rows = $data->rows;
+  $columns = $data->columns;
   return json_encode(Array('columns'=>$columns, 'rows'=>$rows));
 }
 
@@ -151,6 +139,8 @@ function dbte_render(){
   <div class="dbte-page">
     <h1>$cur->title</h1>
     <button class="save" onclick="DBTableEditor.save();"><img src="$base/assets/images/accept.png" align="absmiddle">Save All Changes</button>
+    <button class="export" onclick="DBTableEditor.exportCSV();"><img src="$base/assets/images/download.png" align="absmiddle">Export to CSV</button>
+
     <button onclick="DBTableEditor.gotoNewRow();"><img src="$base/assets/images/add.png" align="absmiddle">New</button>
     <button onclick="DBTableEditor.undo();"><img src="$base/assets/images/arrow_undo.png" align="absmiddle">Undo</button>
     <div class="db-table-editor"></div>
@@ -220,11 +210,11 @@ function dbte_save_cb() {
   }
   header('Content-type: application/json');
   echo json_encode($new_ids);
-  die(); // this is required to return a proper result
+  die(); 
 }
 
 function dbte_delete_cb(){
-  global $wpdb; // this is how you get access to the database
+  global $wpdb;
   $id = $_REQUEST['dataid'];
   $tbl= $_REQUEST['table'];
   $wpdb->delete($tbl, array('id'=>$id));
@@ -233,3 +223,27 @@ function dbte_delete_cb(){
   die();
 }
 add_action( 'wp_ajax_dbte_delete', 'dbte_delete_cb' );
+
+function dbte_export_csv(){
+  global $wpdb, $DBTE_INSTANCES;
+  $tbl= $_REQUEST['table'];
+  $cur = null;
+  foreach($DBTE_INSTANCES as $o){
+    if($tbl == $o->id) $cur = $o;
+  }
+
+  header('Content-Type: application/excel');
+  header('Content-Disposition: attachment; filename="'.$cur->title.'.csv"');
+  $data = $cur->getData();
+  $rows = $data->rows;
+  $columns = $data->columnNames;
+
+  $fp = fopen('php://output', 'w');
+  fputcsv($fp, $columns, ',', '"');
+  foreach ( $rows as $row ){
+    fputcsv($fp, $row, ',', '"');
+  }
+  fclose($fp);
+  die();
+}
+add_action( 'wp_ajax_dbte_export_csv', 'dbte_export_csv' );

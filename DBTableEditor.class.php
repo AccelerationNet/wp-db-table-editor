@@ -1,26 +1,36 @@
 <?php
-function add_db_table_editor($args){
+function add_db_table_editor($args=null){
   global $DBTE_INSTANCES;
   $o = new DBTableEditor($args);
   $DBTE_INSTANCES[] = $o;
   return $o;
 }
 class DBTE_DataTable {
-  var $rows,$columns;
-  function DBTE_DataTable($sql){
+  var $rows,$columns, $columnNames;
+  function DBTE_DataTable($args=null){
     global $wpdb;
-    $this->rows = $wpdb->get_results($sql, ARRAY_N);
-    $cnames = $wpdb->get_col_info('name');
-    $ctypes = $wpdb->get_col_info('type');
-    $this->columns = Array();
-    for($i=0; $i < count($cnames) ; $i++){
-      $this->columns[]=Array('name'=>$cnames[$i], 'type'=>$ctypes[$i]);
+    $args = wp_parse_args($args);
+    if(@$args['sql']){
+      $this->rows = $wpdb->get_results($args['sql'], ARRAY_N);
+    }else if(@$args['rows']){
+      $this->rows = $args['rows'];
     }
+    if(@$args['columns']){
+      $this->columns = $args['columns'];
+    }
+    else{ // handle building columns from wpdb
+      $this->columnNames = $cnames = $wpdb->get_col_info('name');
+      $ctypes = $wpdb->get_col_info('type');
+      $this->columns = Array();
+      for($i=0; $i < count($cnames) ; $i++){
+        $this->columns[]=Array('name'=>$cnames[$i], 'type'=>$ctypes[$i]);
+      }
+    } 
   }
 }
 class DBTableEditor {
   var $table, $title, $dataFn, $id, $data, $cap, $jsFile;
-  function DBTableEditor($args){
+  function DBTableEditor($args=null){
     $args = wp_parse_args($args, array('cap'=>'edit_others_posts'));
     $this->table=@$args['table'];
     $this->id = @$args['id'];
@@ -31,13 +41,13 @@ class DBTableEditor {
     $this->cap = @$args['cap'];
     $this->jsFile = @$args['jsFile'];
   }
-  function getData($args){
+  function getData($args=null){
     $fn = $this->dataFn;
     if($fn){
-      $this->data = $fn($args);
+      $this->data = new DBTE_DataTable(Array("rows"=>$fn($args)));
     }
     else{
-      $this->data = new DBTE_DataTable("SELECT * FROM $this->table;");
+      $this->data = new DBTE_DataTable(Array("sql"=>"SELECT * FROM $this->table;"));
     }
     return $this->data;
   }
