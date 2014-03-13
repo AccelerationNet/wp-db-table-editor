@@ -29,7 +29,7 @@ class DBTE_DataTable {
   }
 }
 class DBTableEditor {
-  var $table, $title, $dataFn, $id, $data, $cap, $jsFile;
+  var $table, $title, $sql, $dataFn, $id, $data, $cap, $jsFile, $nobuttons;
   function DBTableEditor($args=null){
     $args = wp_parse_args($args, array('cap'=>'edit_others_posts'));
     $this->table=@$args['table'];
@@ -38,12 +38,19 @@ class DBTableEditor {
     $this->title = @$args['title'];
     if(!$this->title) $this->title = $this->table;
     $this->dataFn = @$args['dataFn'];
+    $this->sql = @$args['sql'];
     $this->cap = @$args['cap'];
     $this->jsFile = @$args['jsFile'];
+    $this->nobuttons = @$args['nobuttons'];
+    if(!$this->nobuttons) $this->nobuttons = 'false';
   }
   function getData($args=null){
     $fn = $this->dataFn;
-    if($fn){
+    $sql = $this->sql;
+    if($sql){
+      $this->data = new DBTE_DataTable(Array("sql"=>$sql));
+    }
+    else if($fn){
       $this->data = new DBTE_DataTable(Array("rows"=>$fn($args)));
     }
     else{

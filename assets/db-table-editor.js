@@ -126,8 +126,9 @@ DBTableEditor.exportCSV = function(){
   window.location=ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table;
 };
 
-DBTableEditor.onload = function(){
+DBTableEditor.onload = function(opts){
   //console.log('Loading db table');
+  jQuery.extend(DBTableEditor, opts);
   if(!DBTableEditor.data) DBTableEditor.data = DBTableEditorData;
   var rows = DBTableEditor.data.rows;
   var columns = DBTableEditor.data.columns;
@@ -157,8 +158,8 @@ DBTableEditor.onload = function(){
       else c.editor = Slick.Editors.LongText;
     }
   }
-
-  columns.push({id: 'buttons', formatter:DBTableEditor.rowButtonFormatter});
+  if(!DBTableEditor.nobuttons)
+    columns.push({id: 'buttons', formatter:DBTableEditor.rowButtonFormatter});
 
   //init rows
   for(var i=0, r ; r=rows[i] ; i++){

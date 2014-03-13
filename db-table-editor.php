@@ -146,9 +146,7 @@ function dbte_render(){
     <div class="db-table-editor"></div>
     <script type="text/javascript">var DBTableEditorData = $data;
 jQuery(function(){
-   DBTableEditor.table = "$cur->table";
-   DBTableEditor.baseUrl="$base";
-   DBTableEditor.onload();
+    DBTableEditor.onload({'table':"$cur->table", "baseUrl":"$base", 'nobuttons':$cur->nobuttons});
 });
 
 if(window.addEventListener)
