@@ -135,20 +135,28 @@ function dbte_render(){
   }
   $base = plugins_url('wp-db-table-editor');
   $noedit = $cur->noedit;
-  if($cur->editcap && !current_user_can($cur->editcap))
-    $noedit = true;
+  $pendingSaveCnt = "";
+  $pendingSaveHeader = "";
   $buttons="";
-  if( !$noedit )
+  if($cur->editcap && !current_user_can($cur->editcap)){
+    $noedit = true;
+  }
+  if( !$noedit ){
+    $pendingSaveCnt = '<span class="pending-save-count">0</span>';
+    $pendingSaveHeader = "<div class=\"pending-save-header\">There are $pendingSaveCnt unsaved changes</div>";
     $buttons = <<<EOT
-    <button class="save" onclick="DBTableEditor.save();"><img src="$base/assets/images/accept.png" align="absmiddle">Save All Changes</button>
+    <button class="save" onclick="DBTableEditor.save();"><img src="$base/assets/images/accept.png" align="absmiddle">Save $pendingSaveCnt Changes</button>
     <button onclick="DBTableEditor.gotoNewRow();"><img src="$base/assets/images/add.png" align="absmiddle">New</button>
     <button onclick="DBTableEditor.undo();"><img src="$base/assets/images/arrow_undo.png" align="absmiddle">Undo</button>
 EOT;
+  }
   $noedit = $noedit ? "true" : "false";
   $data = dbte_get_data_table();
+  
   $o = <<<EOT
   <div class="dbte-page">
     <h1>$cur->title</h1>
+    $pendingSaveHeader
     <button class="export" onclick="DBTableEditor.exportCSV();"><img src="$base/assets/images/download.png" align="absmiddle">Export to CSV</button>
     $buttons
     <div class="db-table-editor"></div>
@@ -187,7 +195,7 @@ function dbte_save_cb() {
   $tbl= $_REQUEST['table'];
   $cur = dbte_current($tbl);
   if(!$cur) return;
-  if($cur->editcap && !current_user_can($cur->editcap)) return;
+  if($cur->noedit || ($cur->editcap && !current_user_can($cur->editcap))) return;
   // not sure why teh stripslashes is required, but it wont decode without it
   $d = json_decode(htmlspecialchars_decode(stripslashes($d)), true);
 
@@ -222,7 +230,7 @@ function dbte_save_cb() {
   }
   header('Content-type: application/json');
   echo json_encode($new_ids);
-  die(); 
+  die();
 }
 
 function dbte_delete_cb(){
@@ -231,7 +239,7 @@ function dbte_delete_cb(){
   $tbl= $_REQUEST['table'];
   $cur = dbte_current($tbl);
   if(!$cur) return;
-  if($cur->editcap && !current_user_can($cur->editcap)) return;
+  if($cur->noedit || ($cur->editcap && !current_user_can($cur->editcap))) return;
   $wpdb->delete($tbl, array('id'=>$id));
   header('Content-type: application/json');
   echo "{\"deleted\":$id}";

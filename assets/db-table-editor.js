@@ -18,7 +18,7 @@ DBTableEditor.saveCB = function(data){
   jQuery('button.save').attr("disabled", null);
   var src = jQuery('button.save img').attr('src');
   jQuery('button.save img').attr('src',src.replace('loading.gif','accept.png'));
-  DBTableEditor.modifiedRows = [];
+
   var pair;
   while((pair = data.pop())){
     var item = DBTableEditor.dataView.getItemById( pair.rowId );
@@ -33,8 +33,8 @@ DBTableEditor.save = function(){
   jQuery('button.save img').attr('src',src.replace('accept.png','loading.gif'));
 
   // the last time we modified a row should contain all the final modifications
-  var h = {},i,r, toSave=[];
-  while(( r = DBTableEditor.modifiedRows.pop() )){
+  var h = {},i,r, toSave=[], mod = DBTableEditor.modifiedRows.slice(0);
+  while(( r = mod.pop() )){
     if(h[r.item.id]) continue;
     h[r.item.id] = true;
     toSave.push(r.item);
@@ -57,7 +57,8 @@ DBTableEditor.undo = function () {
   var command = DBTableEditor.commandQueue.pop();
   if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
     command.undo();
-    grid.gotoCell(command.row, command.cell, false);
+    DBTableEditor.popPendingSaves(2);// remove the undo, and the undone thing
+    DBTableEditor.grid.gotoCell(command.row, command.cell, false);
   }
   return false;
 };
@@ -134,6 +135,30 @@ DBTableEditor.newId = function(id){
   DBTableEditor._ids_[newid]=true;
   return newid;
 };
+
+DBTableEditor.popPendingSaves = function(n){
+  if(n==null) n = 1;
+  var rtn, it;
+  if(n == 1)
+    rtn = DBTableEditor.modifiedRows.pop();
+  else {
+    rtn=[];
+    // while we havent popped enough and there are things to pop
+    while(n-->0 && (it=DBTableEditor.modifiedRows.pop())) rtn.push(it);
+  }
+  jQuery('.pending-save-count').text(DBTableEditor.modifiedRows.length);
+  return rtn;
+};
+
+DBTableEditor.clearPendingSaves = function(){
+  DBTableEditor.modifiedRows = [];
+  jQuery('.pending-save-count').text(DBTableEditor.modifiedRows.length);
+};
+DBTableEditor.addPendingSave = function(args){
+  DBTableEditor.modifiedRows.push(args);
+  jQuery('.pending-save-count').text(DBTableEditor.modifiedRows.length);
+};
+
 DBTableEditor.onload = function(opts){
   //console.log('Loading db table');
   jQuery.extend(DBTableEditor, opts);
@@ -188,6 +213,7 @@ DBTableEditor.onload = function(opts){
     editCommandHandler: DBTableEditor.queueAndExecuteCommand,
     showHeaderRow: true,
     headerRowHeight: 30,
+    defaultColumnWidth:120,
     explicitInitialization: true
   };
   var columnFilters = DBTableEditor.columnFilters = {};
@@ -205,8 +231,7 @@ DBTableEditor.onload = function(opts){
     grid.gotoCell(ri, ci, true);
   };
 
-
-  DBTableEditor.modifiedRows = [];
+  DBTableEditor.clearPendingSaves();
   grid.onAddNewRow.subscribe(function (e, args) {
     var item = args.item;
     grid.invalidateRow(rows.length);
@@ -214,7 +239,7 @@ DBTableEditor.onload = function(opts){
     dataView.addItem(item);
     grid.updateRowCount();
     grid.render();
-    DBTableEditor.modifiedRows.push(args);
+    DBTableEditor.addPendingSave(args);
     DBTableEditor.mostRecentEdit = new Date();
     nextCell(args);
   });
@@ -222,7 +247,7 @@ DBTableEditor.onload = function(opts){
   grid.onCellChange.subscribe(function(e, args){
     var item = args.item;
     //console.log('edit', e, args, item);
-    DBTableEditor.modifiedRows.push(args);
+    DBTableEditor.addPendingSave(args);
     DBTableEditor.mostRecentEdit = new Date();
     nextCell(args);
   });
@@ -281,6 +306,7 @@ DBTableEditor.onload = function(opts){
   });
 
   grid.init();
+  if(columns.length < 8) grid.autosizeColumns();
   dataView.beginUpdate();
   dataView.setItems(rows);
   dataView.setFilter(DBTableEditor.filterRow);
