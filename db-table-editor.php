@@ -35,9 +35,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-global $DBTE_INSTANCES, $CURRENT_DBTE;
+global $DBTE_INSTANCES, $DBTE_CURRENT;
 $DBTE_INSTANCES = Array();
-$CURRENT_DBTE = null;
+$DBTE_CURRENT = null;
 
 include('DBTableEditor.class.php');
 
@@ -60,11 +60,8 @@ function dbte_get_data_table(){
 function dbte_scripts($hook){
   global $DBTE_INSTANCES, $DBTE_CURRENT;
   $tbl = str_replace('tools_page_', '', $hook);
-  foreach($DBTE_INSTANCES as $o){
-    if($tbl == $o->id) $DBTE_CURRENT = $o;
-  }
-  if(!$DBTE_CURRENT) return;
-  $cur = $DBTE_CURRENT;
+  $cur = dbte_current($tbl);
+  if(!$cur) return;
   $base = plugins_url('wp-db-table-editor');
 
   wp_enqueue_style('slick-grid-css', 
@@ -120,9 +117,13 @@ function dbte_scripts($hook){
 }
 add_action('admin_enqueue_scripts','dbte_scripts');
 
-function dbte_current(){
-  global $DBTE_CURRENT;
+function dbte_current($tbl){
+  global $DBTE_CURRENT, $DBTE_INSTANCES;
   $cur = $DBTE_CURRENT;
+  if($cur) return $cur;
+  if($tbl) foreach($DBTE_INSTANCES as $o){
+    if($tbl == $o->id) $cur = $DBTE_CURRENT = $o;
+  }
   return $cur;
 }
 
@@ -132,21 +133,29 @@ function dbte_render(){
     echo "No Database Table Configured to Edit";
     return;
   }
-
   $base = plugins_url('wp-db-table-editor');
+  $noedit = $cur->noedit;
+  if($cur->editcap && !current_user_can($cur->editcap))
+    $noedit = true;
+  $buttons="";
+  if( !$noedit )
+    $buttons = <<<EOT
+    <button class="save" onclick="DBTableEditor.save();"><img src="$base/assets/images/accept.png" align="absmiddle">Save All Changes</button>
+    <button onclick="DBTableEditor.gotoNewRow();"><img src="$base/assets/images/add.png" align="absmiddle">New</button>
+    <button onclick="DBTableEditor.undo();"><img src="$base/assets/images/arrow_undo.png" align="absmiddle">Undo</button>
+EOT;
+  $noedit = $noedit ? "true" : "false";
   $data = dbte_get_data_table();
   $o = <<<EOT
   <div class="dbte-page">
     <h1>$cur->title</h1>
-    <button class="save" onclick="DBTableEditor.save();"><img src="$base/assets/images/accept.png" align="absmiddle">Save All Changes</button>
     <button class="export" onclick="DBTableEditor.exportCSV();"><img src="$base/assets/images/download.png" align="absmiddle">Export to CSV</button>
-
-    <button onclick="DBTableEditor.gotoNewRow();"><img src="$base/assets/images/add.png" align="absmiddle">New</button>
-    <button onclick="DBTableEditor.undo();"><img src="$base/assets/images/arrow_undo.png" align="absmiddle">Undo</button>
+    $buttons
     <div class="db-table-editor"></div>
-    <script type="text/javascript">var DBTableEditorData = $data;
+    <script type="text/javascript">
 jQuery(function(){
-    DBTableEditor.onload({'table':"$cur->table", "baseUrl":"$base", 'nobuttons':$cur->nobuttons});
+    DBTableEditor.onload({'table':"$cur->table", "baseUrl":"$base", 'noedit':$noedit,
+        "data": $data});
 });
 
 if(window.addEventListener)
@@ -176,8 +185,13 @@ function dbte_save_cb() {
   global $wpdb; // this is how you get access to the database
   $d = $_REQUEST['data'];
   $tbl= $_REQUEST['table'];
+  $cur = dbte_current($tbl);
+  if(!$cur) return;
+  if($cur->editcap && !current_user_can($cur->editcap)) return;
   // not sure why teh stripslashes is required, but it wont decode without it
   $d = json_decode(htmlspecialchars_decode(stripslashes($d)), true);
+
+
 
   //var_dump($d);die();
   $cols = $d["columns"];
@@ -215,6 +229,9 @@ function dbte_delete_cb(){
   global $wpdb;
   $id = $_REQUEST['dataid'];
   $tbl= $_REQUEST['table'];
+  $cur = dbte_current($tbl);
+  if(!$cur) return;
+  if($cur->editcap && !current_user_can($cur->editcap)) return;
   $wpdb->delete($tbl, array('id'=>$id));
   header('Content-type: application/json');
   echo "{\"deleted\":$id}";
@@ -223,12 +240,11 @@ function dbte_delete_cb(){
 add_action( 'wp_ajax_dbte_delete', 'dbte_delete_cb' );
 
 function dbte_export_csv(){
-  global $wpdb, $DBTE_INSTANCES;
+  global $wpdb;
   $tbl= $_REQUEST['table'];
-  $cur = null;
-  foreach($DBTE_INSTANCES as $o){
-    if($tbl == $o->id) $cur = $o;
-  }
+  $cur = dbte_current($tbl);
+  if(!$cur) return;
+  if($cur->editcap && !current_user_can($cur->editcap)) return;
 
   header('Content-Type: application/excel');
   header('Content-Disposition: attachment; filename="'.$cur->title.'.csv"');

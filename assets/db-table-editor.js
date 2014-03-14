@@ -126,10 +126,18 @@ DBTableEditor.exportCSV = function(){
   window.location=ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table;
 };
 
+DBTableEditor._ids_ ={};
+DBTableEditor.newId = function(id){
+  var newid=id;
+  while(DBTableEditor._ids_[newid]){
+    newid = Math.floor(Math.random() * 100000)*100000;}
+  DBTableEditor._ids_[newid]=true;
+  return newid;
+};
 DBTableEditor.onload = function(opts){
   //console.log('Loading db table');
   jQuery.extend(DBTableEditor, opts);
-  if(!DBTableEditor.data) DBTableEditor.data = DBTableEditorData;
+  if(!DBTableEditor.data){ return console.log("No Data for DBTableEditor");}
   var rows = DBTableEditor.data.rows;
   var columns = DBTableEditor.data.columns;
   var columnMap = DBTableEditor.columnMap = {};
@@ -158,14 +166,16 @@ DBTableEditor.onload = function(opts){
       else c.editor = Slick.Editors.LongText;
     }
   }
-  if(!DBTableEditor.nobuttons)
+  if(columnMap['id']==null) DBTableEditor.noedit = true;
+  if(!DBTableEditor.noedit)
     columns.push({id: 'buttons', formatter:DBTableEditor.rowButtonFormatter});
 
   //init rows
   for(var i=0, r ; r=rows[i] ; i++){
     //r.shift(null);
-    r["id"] = r[columnMap["id"]];
-    r.push(null);
+    var rid = DBTableEditor.newId((columnMap["id"]!=null) && r[columnMap["id"]]);
+    r["id"] = rid;
+    if(!DBTableEditor.noedit) r.push(null);
   }
 
   var options = {
@@ -200,7 +210,7 @@ DBTableEditor.onload = function(opts){
   grid.onAddNewRow.subscribe(function (e, args) {
     var item = args.item;
     grid.invalidateRow(rows.length);
-    item.id = Math.floor(Math.random() * 10000)*10000;
+    item.id = DBTableEditor.newId();
     dataView.addItem(item);
     grid.updateRowCount();
     grid.render();

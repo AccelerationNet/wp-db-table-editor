@@ -25,7 +25,10 @@ This supports `wp_parse_args` style arguments.
  * `jsFile`: the name of a registered script that will be enqueued for
    this interface
  * `cap`: the capability a user needs to view/edit this interface,
-   defaults to edit_others_posts
+    defaults to edit_others_posts
+ * `editcap`: the capability required to edit the grid, if not set
+    all viewers are assumed to be editors
+ * `noedit`: turns off the editing abilities (same as editcap=nosuchcapability)
 
 Example:
 ```
