@@ -29,6 +29,8 @@ This supports `wp_parse_args` style arguments.
  * `editcap`: the capability required to edit the grid, if not set
     all viewers are assumed to be editors
  * `noedit`: turns off the editing abilities (same as editcap=nosuchcapability)
+ * `columnFilters`: Default column filters, this is an array of column->val
+   to be applied as default column fitlers when the page is loaded
 
 Example:
 ```

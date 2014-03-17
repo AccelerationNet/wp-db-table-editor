@@ -152,18 +152,21 @@ EOT;
   }
   $noedit = $noedit ? "true" : "false";
   $data = dbte_get_data_table();
-  
+  $columnFiltersJson = json_encode($cur->columnFilters);
   $o = <<<EOT
   <div class="dbte-page">
     <h1>$cur->title</h1>
     $pendingSaveHeader
+    <div class="db-table-editor-buttons">
     <button class="export" onclick="DBTableEditor.exportCSV();"><img src="$base/assets/images/download.png" align="absmiddle">Export to CSV</button>
     $buttons
+    </div>
+    <div class="db-table-editor-row-count" >Showing 0 of 0 rows</div>
     <div class="db-table-editor"></div>
     <script type="text/javascript">
 jQuery(function(){
     DBTableEditor.onload({'table':"$cur->table", "baseUrl":"$base", 'noedit':$noedit,
-        "data": $data});
+          "data": $data, "columnFilters":$columnFiltersJson});
 });
 
 if(window.addEventListener)

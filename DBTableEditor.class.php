@@ -29,7 +29,8 @@ class DBTE_DataTable {
   }
 }
 class DBTableEditor {
-  var $table, $title, $sql, $dataFn, $id, $data, $cap, $jsFile, $noedit, $editcap;
+  var $table, $title, $sql, $dataFn, $id, $data, $cap, $jsFile, $noedit, $editcap,
+    $columnFilters;
   function DBTableEditor($args=null){
     $args = wp_parse_args($args, array('cap'=>'edit_others_posts'));
     $this->table=@$args['table'];
@@ -43,6 +44,7 @@ class DBTableEditor {
     $this->editcap = @$args['editcap'];
     $this->jsFile = @$args['jsFile'];
     $this->noedit = @$args['noedit'];
+    $this->columnFilters = @$args['columnFilters'];
   }
   function getData($args=null){
     $fn = $this->dataFn;

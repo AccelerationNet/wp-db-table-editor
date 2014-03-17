@@ -41,7 +41,7 @@ DBTableEditor.save = function(){
   }
   //console.log(toSave);
   var cols = DBTableEditor.data.columns.map(function(c){return c.name;});
-  cols.pop(); // remove buttons
+  cols.shift(); // remove buttons
   var toSend = JSON.stringify({
     columns:cols,
     rows:toSave
@@ -124,13 +124,21 @@ DBTableEditor.rowButtonFormatter = function(row, cell, value, columnDef, dataCon
 };
 
 DBTableEditor.exportCSV = function(){
-  window.location=ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table;
+  var url = jQuery(DBTableEditor.grid.getHeaderRow())
+   .find(':input').filter(function(){return jQuery(this).val().length>0;})
+   .serialize();
+  window.location=ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table+'&'+url;
+};
+
+DBTableEditor.updatePagingInfo = function(){
+  var cnt = DBTableEditor.dataView.getPagingInfo()["totalRows"];
+  jQuery('.db-table-editor-row-count').text ("Showing "+cnt+" of "+DBTableEditor.data.rows.length+" rows");
 };
 
 DBTableEditor._ids_ ={};
 DBTableEditor.newId = function(id){
   var newid=id;
-  while(DBTableEditor._ids_[newid]){
+  while(!newid || DBTableEditor._ids_[newid]){
     newid = Math.floor(Math.random() * 100000)*100000;}
   DBTableEditor._ids_[newid]=true;
   return newid;
@@ -172,7 +180,8 @@ DBTableEditor.onload = function(opts){
     c.id=c.name.toLowerCase();
     c.field = i;
     c.sortable = true;
-    columnMap[c.id] = i;
+    //account for buttons column at 0 if needed
+    columnMap[c.id] = DBTableEditor.noedit ? i : i+1;
 
     if(c.id!="id" && !c.editor){
       if(c.id.search('date')>=0){
@@ -193,7 +202,7 @@ DBTableEditor.onload = function(opts){
   }
   if(columnMap['id']==null) DBTableEditor.noedit = true;
   if(!DBTableEditor.noedit)
-    columns.push({id: 'buttons', formatter:DBTableEditor.rowButtonFormatter});
+    columns.unshift({id: 'buttons', formatter:DBTableEditor.rowButtonFormatter, width:75});
 
   //init rows
   for(var i=0, r ; r=rows[i] ; i++){
@@ -216,7 +225,7 @@ DBTableEditor.onload = function(opts){
     defaultColumnWidth:120,
     explicitInitialization: true
   };
-  var columnFilters = DBTableEditor.columnFilters = {};
+  var columnFilters = DBTableEditor.columnFilters = DBTableEditor.columnFilters || {};
   var dataView = DBTableEditor.dataView = new Slick.Data.DataView({ inlineFilters: true });
   var grid = DBTableEditor.grid = new Slick.Grid('.db-table-editor', dataView, columns, options);
   grid.setSelectionModel(new Slick.CellSelectionModel());
@@ -281,11 +290,13 @@ DBTableEditor.onload = function(opts){
   dataView.onRowCountChanged.subscribe(function (e, args) {
     grid.updateRowCount();
     grid.render();
+    DBTableEditor.updatePagingInfo();
   });
 
   dataView.onRowsChanged.subscribe(function (e, args) {
     grid.invalidateRows(args.rows);
     grid.render();
+    DBTableEditor.updatePagingInfo();
   });
 
   jQuery(grid.getHeaderRow()).delegate(":input", "change keyup", function (e) {
@@ -299,9 +310,11 @@ DBTableEditor.onload = function(opts){
   grid.onHeaderRowCellRendered.subscribe(function(e, args) {
       jQuery(args.node).empty();
       if(args.column.id == "buttons") return;
+      DBTableEditor.$filterRow = jQuery(args.node);
       jQuery("<input type='text'>")
          .data("columnId", args.column.id)
-         .val(columnFilters[args.column.id])
+         .val(DBTableEditor.columnFilters[args.column.id])
+         .attr('name',args.column.id)
          .appendTo(args.node);
   });
 
@@ -311,6 +324,8 @@ DBTableEditor.onload = function(opts){
   dataView.setItems(rows);
   dataView.setFilter(DBTableEditor.filterRow);
   dataView.endUpdate();
+  dataView.refresh();
+  DBTableEditor.updatePagingInfo();
 
   jQuery('button.save').attr("disabled", null);
 
