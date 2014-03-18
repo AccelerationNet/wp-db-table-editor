@@ -117,7 +117,7 @@ function dbte_scripts($hook){
 }
 add_action('admin_enqueue_scripts','dbte_scripts');
 
-function dbte_current($tbl){
+function dbte_current($tbl=null){
   global $DBTE_CURRENT, $DBTE_INSTANCES;
   $cur = $DBTE_CURRENT;
   if($cur) return $cur;
