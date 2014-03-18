@@ -1,3 +1,4 @@
+if(typeof(console)=='undefined')console={log:function(){}};
 if(typeof(DBTableEditor)=='undefined') DBTableEditor={};
 
 DBTableEditor.commandQueue =[];
@@ -127,7 +128,9 @@ DBTableEditor.exportCSV = function(){
   var url = jQuery(DBTableEditor.grid.getHeaderRow())
    .find(':input').filter(function(){return jQuery(this).val().length>0;})
    .serialize();
-  window.location=ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table+'&'+url;
+  var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table+'&'+url;
+  console.log('Redirecting to export:', url);
+  window.location=url;
 };
 
 DBTableEditor.updatePagingInfo = function(){
@@ -314,7 +317,7 @@ DBTableEditor.onload = function(opts){
       jQuery("<input type='text'>")
          .data("columnId", args.column.id)
          .val(DBTableEditor.columnFilters[args.column.id])
-         .attr('name',args.column.id)
+         .attr('name','filter-'+args.column.id)
          .appendTo(args.node);
   });
 

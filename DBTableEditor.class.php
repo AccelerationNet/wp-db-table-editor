@@ -10,8 +10,16 @@ class DBTE_DataTable {
   function DBTE_DataTable($args=null){
     global $wpdb;
     $args = wp_parse_args($args);
-    if(@$args['sql']){
-      $this->rows = $wpdb->get_results($args['sql'], ARRAY_N);
+    $sql = @$args['sql'];
+    $where = @$args['where'];
+    if($sql){ 
+      if($where){
+        if(is_array($where)) $where = implode(' AND ', $where);
+        if(strrpos(strtolower($sql) ,'where') > 0) $sql .= " AND ";
+        else $sql .= " WHERE ";
+        $sql .= ' ('.$where.') ';
+      }
+      $this->rows = $wpdb->get_results($sql, ARRAY_N);
     }else if(@$args['rows']){
       $this->rows = $args['rows'];
     }
@@ -49,15 +57,11 @@ class DBTableEditor {
   function getData($args=null){
     $fn = $this->dataFn;
     $sql = $this->sql;
-    if($sql){
-      $this->data = new DBTE_DataTable(Array("sql"=>$sql));
-    }
-    else if($fn){
-      $this->data = new DBTE_DataTable(Array("rows"=>$fn($args)));
-    }
-    else{
-      $this->data = new DBTE_DataTable(Array("sql"=>"SELECT * FROM $this->table;"));
-    }
+
+    if($sql) $args['sql'] = $sql;
+    else if($fn) $args['rows'] = $fn($args);
+    else $args["sql"] ="SELECT * FROM $this->table;";
+    $this->data = new DBTE_DataTable($args);
     return $this->data;
   }
 }

@@ -165,7 +165,7 @@ EOT;
     <div class="db-table-editor"></div>
     <script type="text/javascript">
 jQuery(function(){
-    DBTableEditor.onload({'table':"$cur->table", "baseUrl":"$base", 'noedit':$noedit,
+    DBTableEditor.onload({'table':"$cur->id", "baseUrl":"$base", 'noedit':$noedit,
           "data": $data, "columnFilters":$columnFiltersJson});
 });
 
@@ -257,12 +257,22 @@ function dbte_export_csv(){
   if(!$cur) return;
   if($cur->editcap && !current_user_can($cur->editcap)) return;
 
+  $wheres = array();
+  $filtered=false;
+  foreach($_REQUEST as $k=>$v){
+    if(strpos($k, "filter-")===0){
+      $k = str_replace('filter-','', $k);
+      $wheres[] = $wpdb->prepare("$k LIKE %s", '%'.$v.'%');
+      $filtered = true;
+    }
+  }
+  $title = $cur->title;
+  if($filtered) $title .= '-filtered';
   header('Content-Type: application/excel');
-  header('Content-Disposition: attachment; filename="'.$cur->title.'.csv"');
-  $data = $cur->getData();
-  $rows = $data->rows;
+  header('Content-Disposition: attachment; filename="'.$title.'.csv"');
+  $data = $cur->getData(array("where"=>$wheres));
   $columns = $data->columnNames;
-
+  $rows = $data->rows;
   $fp = fopen('php://output', 'w');
   fputcsv($fp, $columns, ',', '"');
   foreach ( $rows as $row ){
