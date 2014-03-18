@@ -191,7 +191,7 @@ DBTableEditor.onload = function(opts){
     c.field = i;
     c.sortable = true;
     //account for buttons column at 0 if needed
-    columnMap[c.id] = DBTableEditor.noedit ? i : i+1;
+    columnMap[c.id] = i; //DBTableEditor.noedit ? i : i+1;
 
     if(c.id!="id" && !c.editor){
       if(c.id.search('date')>=0){
@@ -216,7 +216,7 @@ DBTableEditor.onload = function(opts){
 
   //init rows
   for(var i=0, r ; r=rows[i] ; i++){
-    //r.shift(null);
+    // r.shift(null);
     var rid = DBTableEditor.newId((columnMap["id"]!=null) && r[columnMap["id"]]);
     r["id"] = rid;
     if(!DBTableEditor.noedit) r.push(null);
