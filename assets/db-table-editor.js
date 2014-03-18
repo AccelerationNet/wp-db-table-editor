@@ -26,6 +26,7 @@ DBTableEditor.saveCB = function(data){
     item[DBTableEditor.columnMap['id']] = pair.dbid;
     DBTableEditor.dataView.updateItem(pair.rowId, item);
   }
+  DBTableEditor.clearPendingSaves();
 };
 
 DBTableEditor.clearFilters = function(){

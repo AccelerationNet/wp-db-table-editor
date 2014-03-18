@@ -206,7 +206,6 @@ function dbte_save_cb() {
   $d = json_decode(htmlspecialchars_decode(stripslashes($d)), true);
 
 
-
   //var_dump($d);die();
   $cols = $d["columns"];
   $rows = $d["rows"];
@@ -218,19 +217,23 @@ function dbte_save_cb() {
     if($c=='id') $idIdx = $i;
     $i++;
   }
-
+  // echo "id: $idIdx, "; print_r($rows);
   $i=0;
   $new_ids = Array();
   foreach($rows as $r){
     $id=@$r[$idIdx];
     $up = array();
-    for($i=0 ; $i < $len ; $i++) $up[$cols[$i]] = @$r[$i];
-    if($id){
+    for($i=0 ; $i < $len ; $i++) {
+      if($i != $idIdx){
+        $up[$cols[$i]] = @$r[$i];
+      }
+    }
+    if($id != null){
       $where = array('id'=>$id);
-      $wpdb->update($tbl, $up , $where);
+      $wpdb->update($cur->table, $up , $where);
     }
     else{
-      $wpdb->insert($tbl, $up);
+      $wpdb->insert($cur->table, $up);
       $new_ids[] = Array('rowId'=>$r["id"], 'dbid'=>$wpdb->insert_id);
     }
   }
@@ -246,7 +249,7 @@ function dbte_delete_cb(){
   $cur = dbte_current($tbl);
   if(!$cur) return;
   if($cur->noedit || ($cur->editcap && !current_user_can($cur->editcap))) return;
-  $wpdb->delete($tbl, array('id'=>$id));
+  $wpdb->delete($cur->table, array('id'=>$id));
   header('Content-type: application/json');
   echo "{\"deleted\":$id}";
   die();
