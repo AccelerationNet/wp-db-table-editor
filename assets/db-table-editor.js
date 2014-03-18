@@ -235,7 +235,7 @@ DBTableEditor.onload = function(opts){
     defaultColumnWidth:120,
     explicitInitialization: true
   };
-  var columnFilters = DBTableEditor.columnFilters = DBTableEditor.columnFilters || {};
+  DBTableEditor.columnFilters = DBTableEditor.columnFilters || {};
   var dataView = DBTableEditor.dataView = new Slick.Data.DataView({ inlineFilters: true });
   var grid = DBTableEditor.grid = new Slick.Grid('.db-table-editor', dataView, columns, options);
   grid.setSelectionModel(new Slick.CellSelectionModel());
@@ -312,7 +312,7 @@ DBTableEditor.onload = function(opts){
   jQuery(grid.getHeaderRow()).delegate(":input", "change keyup", function (e) {
     var columnId = jQuery(this).data("columnId");
     if (columnId != null) {
-      columnFilters[columnId] = jQuery.trim(jQuery(this).val());
+      DBTableEditor.columnFilters[columnId] = jQuery.trim(jQuery(this).val());
       dataView.refresh();
     }
   });
@@ -320,7 +320,6 @@ DBTableEditor.onload = function(opts){
   grid.onHeaderRowCellRendered.subscribe(function(e, args) {
       jQuery(args.node).empty();
       if(args.column.id == "buttons") return;
-      DBTableEditor.$filterRow = jQuery(args.node);
       jQuery("<input type='text'>")
          .data("columnId", args.column.id)
          .val(DBTableEditor.columnFilters[args.column.id])
