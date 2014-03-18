@@ -28,6 +28,13 @@ DBTableEditor.saveCB = function(data){
   }
 };
 
+DBTableEditor.clearFilters = function(){
+  DBTableEditor.columnFilters = {};
+  jQuery(DBTableEditor.grid.getHeaderRow())
+   .find(':input').each(function(){jQuery(this).val('');});
+  DBTableEditor.dataView.refresh();
+};
+
 DBTableEditor.save = function(){
   jQuery('button.save').attr("disabled", "disabled");
   var src = jQuery('button.save img').attr('src');

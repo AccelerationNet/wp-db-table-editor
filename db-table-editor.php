@@ -159,6 +159,9 @@ EOT;
     $pendingSaveHeader
     <div class="db-table-editor-buttons">
     <button class="export" onclick="DBTableEditor.exportCSV();"><img src="$base/assets/images/download.png" align="absmiddle">Export to CSV</button>
+    <button class="clear" onclick="DBTableEditor.clearFilters();">
+      <img src="$base/assets/images/clear.png" align="absmiddle">
+      Clear Filters</button>
     $buttons
     </div>
     <div class="db-table-editor-row-count" >Showing 0 of 0 rows</div>
