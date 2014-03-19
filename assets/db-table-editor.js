@@ -234,8 +234,8 @@ DBTableEditor.onload = function(opts){
   var options = {
     enableCellNavigation: true,
     enableColumnReorder: true,
-    editable: true,
-    enableAddRow: true,
+    editable: !DBTableEditor.noedit,
+    enableAddRow: !DBTableEditor.noedit,
     multiColumnSort:true,
     autoEdit:false,
     editCommandHandler: DBTableEditor.queueAndExecuteCommand,
