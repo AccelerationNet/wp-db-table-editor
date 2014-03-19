@@ -49,7 +49,7 @@ DBTableEditor.save = function(){
     toSave.push(r.item);
   }
   //console.log(toSave);
-  var cols = DBTableEditor.data.columns.map(function(c){return c.name;});
+  var cols = DBTableEditor.data.columns.map(function(c){return c.originalName;});
   cols.shift(); // remove buttons
   var toSend = JSON.stringify({
     columns:cols,
@@ -190,8 +190,8 @@ DBTableEditor.onload = function(opts){
   // init columns
   for( var i=0, c ; c=columns[i] ; i++){
     c.id=c.name.toLowerCase();
+    c.originalName = c.name;
     if(DBTableEditor.columnNameMap[c.name]){
-      c.originalName = c.name;
       c.name = DBTableEditor.columnNameMap[c.name];
     }
     else{

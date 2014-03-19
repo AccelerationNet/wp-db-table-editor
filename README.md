@@ -5,10 +5,15 @@ tables in your wordpress database.
 
 It supports:
  * one table per admin screen, as many admin screens as desired
+  * These are organized under a new "DB Table Editor" menu item
  * excel spreadsheet like interface using SlickGrid
- * Add / Edit / Delete
+ * Filter and Sort results
+ * Add, Edit & Delete records
  * Custom buttons extensibility
- * Custom permissions per interface (defaults to: edit_others_posts)
+ * Custom permissions per interface for viewing and editing 
+   (defaults to: edit_others_posts)
+  * editing defaults to the same permission as viewing if not specified
+ * CSV exports of filtered grid
 
 ## Adding an interface
 
