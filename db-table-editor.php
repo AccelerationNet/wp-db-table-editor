@@ -59,7 +59,7 @@ function dbte_get_data_table(){
 
 function dbte_scripts($hook){
   global $DBTE_INSTANCES, $DBTE_CURRENT;
-  $tbl = str_replace('tools_page_', '', $hook);
+  $tbl = str_replace('db-table-editor_page_', '', $hook);
   $cur = dbte_current($tbl);
   if(!$cur) return;
   $base = plugins_url('wp-db-table-editor');
@@ -188,14 +188,40 @@ EOT;
 
 function dbte_menu(){
   global $DBTE_INSTANCES;
+  $ico = plugins_url('wp-db-table-editor/assets/images/database_edit.png');
+  add_menu_page('DB Table Editor', 'DB Table Editor', 'read', 'wp-db-table-editor',
+                'dbte_main_page', $ico, 50);
   foreach($DBTE_INSTANCES as $o){
     $cap = $o->cap;
     // shouldnt be null, but lets be defensive
     if(!$cap) $cap = 'edit_others_posts';
-    add_management_page( $o->title, $o->title, $cap, $o->id, 'dbte_render' );
+    add_submenu_page('wp-db-table-editor', $o->title, $o->title, $cap, $o->id, 'dbte_render' );
   }
+
 }
 add_action('admin_menu', 'dbte_menu');
+
+function dbte_main_page(){
+  global $DBTE_INSTANCES;
+  echo <<<EOT
+<h2>DB Table Editor</h2>
+<a href="https://github.com/AccelerationNet/wp-db-table-editor/"><h4>
+   Github - DB Table Editor</h4></a>
+<p style="max-width:600px;">
+  This plugin allows viewing, editing, and exporting of database tables 
+  in your wordpress database through the admin interface.  See the
+  <a href="https://github.com/AccelerationNet/wp-db-table-editor/blob/master/README.md">README.md</a> 
+  for information on configuring this plugin.
+</p>
+<h3> Configured Database Tables </h3>
+<ul>
+
+EOT;
+  foreach($DBTE_INSTANCES as $o){
+    echo "<li><a href=\"admin.php?page=$o->id\">$o->title</a></li>";
+  }
+  echo "</ul>";
+}
 
 add_action( 'wp_ajax_dbte_save', 'dbte_save_cb' );
 function dbte_save_cb() {
