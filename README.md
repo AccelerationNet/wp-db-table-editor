@@ -31,6 +31,7 @@ This supports `wp_parse_args` style arguments.
  * `noedit`: turns off the editing abilities (same as editcap=nosuchcapability)
  * `columnFilters`: Default column filters, this is an array of column->val
    to be applied as default column fitlers when the page is loaded
+ * `columnNameMap`: A map of actual column names to displayed label
 
 Example:
 ```
