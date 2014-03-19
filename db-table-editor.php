@@ -59,7 +59,7 @@ function dbte_get_data_table(){
 
 function dbte_scripts($hook){
   global $DBTE_INSTANCES, $DBTE_CURRENT;
-  $tbl = str_replace('db-table-editor_page_', '', $hook);
+  $tbl = str_replace('db-table-editor_page_dbte_', '', $hook);
   $cur = dbte_current($tbl);
   if(!$cur) return;
   $base = plugins_url('wp-db-table-editor');
@@ -195,7 +195,7 @@ function dbte_menu(){
     $cap = $o->cap;
     // shouldnt be null, but lets be defensive
     if(!$cap) $cap = 'edit_others_posts';
-    add_submenu_page('wp-db-table-editor', $o->title, $o->title, $cap, $o->id, 'dbte_render' );
+    add_submenu_page('wp-db-table-editor', $o->title, $o->title, $cap, 'dbte_'.$o->id, 'dbte_render' );
   }
 
 }
@@ -218,7 +218,7 @@ function dbte_main_page(){
 
 EOT;
   foreach($DBTE_INSTANCES as $o){
-    echo "<li><a href=\"admin.php?page=$o->id\">$o->title</a></li>";
+    echo "<li><a href=\"admin.php?page=dbte_$o->id\">$o->title</a></li>";
   }
   echo "</ul>";
 }
