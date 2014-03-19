@@ -41,8 +41,14 @@ This supports `wp_parse_args` style arguments.
 Example:
 ```
 if(function_exists('add_db_table_editor')){
-  add_db_table_editor('title=Employees&table=employees&'.
-    'dataFn=get_employees&jsFile=employees-table-extensions-js');
+  add_db_table_editor('title=Employees&table=employees');
+
+  add_db_table_editor(array(
+    'title'=>'Event Registrations',
+    'table'=>'event_registrations',
+    'sql'=>'SELECT * FROM event_registrations ORDER BY date_entered DESC'
+  ));
+
 }
 ```
 
@@ -65,4 +71,3 @@ function dbTableEditorScripts(){
 
  * Database tables are expected to have a column names `id` that is
    the primary key
- * There is only one permission per interface, anyone who sees it can edit
