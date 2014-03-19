@@ -153,6 +153,7 @@ EOT;
   $noedit = $noedit ? "true" : "false";
   $data = dbte_get_data_table();
   $columnFiltersJson = json_encode($cur->columnFilters);
+  $columnNameMap = json_encode($cur->columnNameMap);
   $o = <<<EOT
   <div class="dbte-page">
     <h1>$cur->title</h1>
@@ -169,7 +170,7 @@ EOT;
     <script type="text/javascript">
 jQuery(function(){
     DBTableEditor.onload({'table':"$cur->id", "baseUrl":"$base", 'noedit':$noedit,
-          "data": $data, "columnFilters":$columnFiltersJson});
+          "data": $data, "columnFilters":$columnFiltersJson, "columnNameMap":$columnNameMap});
 });
 
 if(window.addEventListener)

@@ -185,10 +185,18 @@ DBTableEditor.onload = function(opts){
   var rows = DBTableEditor.data.rows;
   var columns = DBTableEditor.data.columns;
   var columnMap = DBTableEditor.columnMap = {};
+  DBTableEditor.columnNameMap = DBTableEditor.columnNameMap||{};
 
   // init columns
   for( var i=0, c ; c=columns[i] ; i++){
     c.id=c.name.toLowerCase();
+    if(DBTableEditor.columnNameMap[c.name]){
+      c.originalName = c.name;
+      c.name = DBTableEditor.columnNameMap[c.name];
+    }
+    else{
+      c.name = c.name.replace("_"," ");
+    }
     c.field = i;
     c.sortable = true;
     //account for buttons column at 0 if needed
