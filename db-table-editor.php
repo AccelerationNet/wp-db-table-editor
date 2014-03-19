@@ -188,8 +188,10 @@ EOT;
 function dbte_menu(){
   global $DBTE_INSTANCES;
   foreach($DBTE_INSTANCES as $o){
-    add_management_page( $o->title, $o->title, 
-      $o->cap, $o->id, 'dbte_render' );
+    $cap = $o->cap;
+    // shouldnt be null, but lets be defensive
+    if(!$cap) $cap = 'edit_others_posts';
+    add_management_page( $o->title, $o->title, $cap, $o->id, 'dbte_render' );
   }
 }
 add_action('admin_menu', 'dbte_menu');

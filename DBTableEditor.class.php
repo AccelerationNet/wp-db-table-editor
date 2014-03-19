@@ -41,18 +41,9 @@ class DBTableEditor {
     $columnFilters;
   function DBTableEditor($args=null){
     $args = wp_parse_args($args, array('cap'=>'edit_others_posts'));
-    $this->table=@$args['table'];
-    $this->id = @$args['id'];
+    foreach($args as $k => $v) $this->{$k} = $v;
     if(!$this->id) $this->id = $this->table;
-    $this->title = @$args['title'];
     if(!$this->title) $this->title = $this->table;
-    $this->dataFn = @$args['dataFn'];
-    $this->sql = @$args['sql'];
-    $this->cap = @$args['cap'];
-    $this->editcap = @$args['editcap'];
-    $this->jsFile = @$args['jsFile'];
-    $this->noedit = @$args['noedit'];
-    $this->columnFilters = @$args['columnFilters'];
   }
   function getData($args=null){
     $fn = $this->dataFn;
