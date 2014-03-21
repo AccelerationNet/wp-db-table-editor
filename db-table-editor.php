@@ -35,17 +35,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+/* Variables to store the list of configred wp-db-table-editors and 
+ * the currently selected instance
+ */
 global $DBTE_INSTANCES, $DBTE_CURRENT;
 $DBTE_INSTANCES = Array();
 $DBTE_CURRENT = null;
 
 include('DBTableEditor.class.php');
 
+/* TODO: could be used to pull current config from the db if needed
 add_action('plugins_loaded','db_table_editor_init');
 function db_table_editor_init(){
 }
+*/
 
-
+/*
+ * Gets the DBTE_DataTable of the current DBTE instance
+ */
 function dbte_get_data_table(){
   global $wpdb;
   $cur = dbte_current();
@@ -57,6 +64,15 @@ function dbte_get_data_table(){
   return json_encode(Array('columns'=>$columns, 'rows'=>$rows));
 }
 
+/*
+ * Enqueue all scripts and styles need to render this plugin
+ *
+ * we will also doaction db-table-editor_enqueue_scripts
+ * so that users can enqueue their own files
+ *
+ * we will also enqueue the current DBTE instance's jsFile
+ * which should be the name of a registered script
+ */
 function dbte_scripts($hook){
   global $DBTE_INSTANCES, $DBTE_CURRENT;
   $tbl = str_replace('db-table-editor_page_dbte_', '', $hook);
@@ -117,6 +133,9 @@ function dbte_scripts($hook){
 }
 add_action('admin_enqueue_scripts','dbte_scripts');
 
+/*
+ * Looks up and sets the current table instance (by id)
+ */
 function dbte_current($tbl=null){
   global $DBTE_CURRENT, $DBTE_INSTANCES;
   $cur = $DBTE_CURRENT;
@@ -127,6 +146,9 @@ function dbte_current($tbl=null){
   return $cur;
 }
 
+/*
+ * Renders the DBTE page for the current instance
+ */
 function dbte_render(){
   $cur = dbte_current();
   if(!$cur){
@@ -186,6 +208,10 @@ EOT;
   echo $o;
 }
 
+/*
+ * Creates all the menu items based on each of the $DBTE_INSTANCES
+ * puts them in a DB Table Editor menu on admin
+ */
 function dbte_menu(){
   global $DBTE_INSTANCES;
   $ico = plugins_url('wp-db-table-editor/assets/images/database_edit.png');
@@ -201,6 +227,10 @@ function dbte_menu(){
 }
 add_action('admin_menu', 'dbte_menu');
 
+/*
+ * A page for the main menu. Currently just has links to each interface
+ * and a bit of explanitory text
+ */
 function dbte_main_page(){
   global $DBTE_INSTANCES;
   echo <<<EOT
@@ -223,6 +253,9 @@ EOT;
   echo "</ul>";
 }
 
+/*
+ * Ajax Save Handler, called with json rows/columns data
+ */
 add_action( 'wp_ajax_dbte_save', 'dbte_save_cb' );
 function dbte_save_cb() {
   global $wpdb; // this is how you get access to the database
@@ -271,6 +304,9 @@ function dbte_save_cb() {
   die();
 }
 
+/*
+ * Ajax Delete Handler - called from delete buttons on each row of the clickgrid
+ */
 function dbte_delete_cb(){
   global $wpdb;
   $id = $_REQUEST['dataid'];
@@ -285,6 +321,10 @@ function dbte_delete_cb(){
 }
 add_action( 'wp_ajax_dbte_delete', 'dbte_delete_cb' );
 
+/*
+ * Written as an ajax handler because that was easy, but we usually just link to here
+ * will export filtered results using any filter-{columnname} request parameters provided
+ */
 function dbte_export_csv(){
   global $wpdb;
   $tbl= $_REQUEST['table'];

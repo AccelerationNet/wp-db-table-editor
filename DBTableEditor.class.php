@@ -1,10 +1,29 @@
 <?php
+/**
+ * Classes to enable wp-db-table-editor to work
+ *
+ * @package wp-db-table-editor
+ */
+
+/*
+ * The primary entrypoint to configuring wp-db-table-editor's
+ * creates a DBTableEditor instance and puts it in the global 
+ * configuration array
+ */
 function add_db_table_editor($args=null){
   global $DBTE_INSTANCES;
   $o = new DBTableEditor($args);
   $DBTE_INSTANCES[] = $o;
   return $o;
 }
+
+  /**
+   * A data table containing column objects and row arrays
+   * for convenience also contains an array of columnNames
+   *
+   * Can be initialized by passing sql, where, or rows & columns
+   * as arguments associative array
+   */
 class DBTE_DataTable {
   var $rows,$columns, $columnNames;
   function DBTE_DataTable($args=null){
@@ -36,6 +55,12 @@ class DBTE_DataTable {
     } 
   }
 }
+
+  /**
+   * A class to contain the configuration state for each DBTableEditor 
+   * that is available
+   * @access public
+   */
 class DBTableEditor {
   var $table, $title, $sql, $dataFn, $id, $data, $cap, $jsFile, $noedit, $editcap,
     $columnFilters, $columnNameMap;
@@ -45,6 +70,10 @@ class DBTableEditor {
     if(!$this->id) $this->id = $this->table;
     if(!$this->title) $this->title = $this->table;
   }
+  /*
+   * Gets data from the data source (either sql, or dataFn (prefering sql)
+   * default is to SELECT * FROM {table}
+   */
   function getData($args=null){
     $fn = $this->dataFn;
     $sql = $this->sql;
