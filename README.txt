@@ -1,4 +1,5 @@
 === WP-DB-Table-Editor ===
+
 Contributers: bobbysmith007
 Donate link: https://www.acceleration.net/programming/donate-to-acceleration-net/
 Tags: admin screens, database, editor
