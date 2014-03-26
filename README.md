@@ -25,7 +25,7 @@ It supports:
   * editing defaults to the same permission as viewing if not specified
  * CSV exports of filtered grid
 
-=== Reasons and Expectations ===
+= Reasons and Expectations =
 
 Previously my company had been using DB-toolkit to provide minimal
 database interfaces for custom tables through the Wordpress admin.
@@ -54,7 +54,7 @@ This is installed the same way all wordpress plugins:
 
 
 
-=== Adding an interface ===
+= Adding an interface =
 
 DB-Table Editor Interfaces are added by calling the
 add_db_table_editor function in your theme's `functions.php` file.
@@ -91,7 +91,7 @@ if(function_exists('add_db_table_editor')){
 }
 ```
 
-=== Hooks / Actions ===
+= Hooks / Actions =
 
  * `db-table-editor_enqueue_scripts` is an action that will be called
    after enqueueing all plugin scripts and before enqueueing `jsFile`
