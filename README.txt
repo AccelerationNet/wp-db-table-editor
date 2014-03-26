@@ -14,6 +14,7 @@ tables in your Wordpress database.  It's goals are to provide useful,
 simple, flexible database table admin screens.
 
 It supports:
+
  * one table per admin screen, as many admin screens as desired
   * These are organized under a new "DB Table Editor" menu item
  * excel spreadsheet like interface using SlickGrid
