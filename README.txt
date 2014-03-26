@@ -7,6 +7,7 @@ Requires at least: 3.0.0
 Tested Up To: 3.8.1
 Stable tag: trunk
 License: BSD
+URL: https://github.com/AccelerationNet/wp-db-table-editor/
 
 == Description ==
 
