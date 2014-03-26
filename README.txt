@@ -1,4 +1,13 @@
-# WP-DB-Table-Editor
+=== WP-DB-Table-Editor ===
+Contributers: bobbysmith007
+Donate link: https://www.acceleration.net/programming/donate-to-acceleration-net/
+Tags: admin screens, database, editor
+Requires at least: 3.0.0
+Tested Up To: 3.8.1
+Stable tag: trunk
+License: BSD
+
+== Description ==
 
 This is a Wordpress plugin that allows direct excel-like editing of
 tables in your Wordpress database.  It's goals are to provide useful,
@@ -16,7 +25,7 @@ It supports:
   * editing defaults to the same permission as viewing if not specified
  * CSV exports of filtered grid
 
-## Reasons and Expectations
+=== Reasons and Expectations ===
 
 Previously my company had been using DB-toolkit to provide minimal
 database interfaces for custom tables through the Wordpress admin.
@@ -33,7 +42,19 @@ screens).  This was preferable to me, because my configuration is
 safely in source control (a problem I had when DB-toolkit would
 upgrade and lose all configuration).
 
-## Adding an interface
+
+== Installation ==
+
+This is installed the same way all wordpress plugins:
+
+ * Drop the unzipped plugin directory into your wordpress install at
+   `wp-content/plugins/wp-db-table-editor`
+
+ * Activate the plugin via the Wordpress Admin > "Plugins" menu
+
+
+
+=== Adding an interface ===
 
 DB-Table Editor Interfaces are added by calling the
 add_db_table_editor function in your theme's `functions.php` file.
@@ -70,7 +91,7 @@ if(function_exists('add_db_table_editor')){
 }
 ```
 
-## Hooks / Actions
+=== Hooks / Actions ===
 
  * `db-table-editor_enqueue_scripts` is an action that will be called
    after enqueueing all plugin scripts and before enqueueing `jsFile`
@@ -85,7 +106,7 @@ function dbTableEditorScripts(){
   add_action('db-table-editor_enqueue_scripts', 'dbTableEditorScripts');
 ```
 
-## Caveats
+== Caveats ==
 
  * Database tables are expected to have a column names `id` that is
    the primary key
