@@ -80,7 +80,7 @@ class DBTableEditor {
 
     if($sql) $args['sql'] = $sql;
     else if($fn) $args['rows'] = $fn($args);
-    else $args["sql"] ="SELECT * FROM $this->table;";
+    else $args["sql"] ="SELECT * FROM $this->table";
     $this->data = new DBTE_DataTable($args);
     return $this->data;
   }

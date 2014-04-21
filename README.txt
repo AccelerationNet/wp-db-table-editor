@@ -1,8 +1,8 @@
 # WP-DB-Table-Editor
 
-This is a Wordpress plugin that allows direct excel-like editing of
-tables in your Wordpress database.  It's goals are to provide useful,
-simple, flexible database table admin screens.
+This is a Wordpress plugin that allows direct spreadsheet (excel-like)
+editing of tables in your Wordpress database.  It's goals are to
+provide useful, simple, flexible database table admin screens.
 
 It supports:
  * one table per admin screen, as many admin screens as desired
