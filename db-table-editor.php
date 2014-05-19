@@ -3,7 +3,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.0.0
+Version: 1.1.0
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 License: BSD
@@ -139,21 +139,36 @@ add_action('admin_enqueue_scripts','dbte_scripts');
 function dbte_current($tbl=null){
   global $DBTE_CURRENT, $DBTE_INSTANCES;
   $cur = $DBTE_CURRENT;
-  if($cur) return $cur;
+  if($cur && ($cur->id == $tbl || !$tbl)) return $cur;
   if($tbl) foreach($DBTE_INSTANCES as $o){
     if($tbl == $o->id) $cur = $DBTE_CURRENT = $o;
   }
   return $cur;
 }
 
+function dbte_shortcode($args){
+  $id = @$args["id"];
+  $o="";
+  if($id){
+    dbte_scripts($id);
+    $o = dbte_render($id);
+  }
+  return $o;
+}
+add_shortcode('dbte','dbte_shortcode');
+
+
+
+function echo_dbte_render(){
+  echo dbte_render();
+}
 /*
  * Renders the DBTE page for the current instance
  */
-function dbte_render(){
-  $cur = dbte_current();
+function dbte_render($id=null){
+  $cur = dbte_current($id);
   if(!$cur){
-    echo "No Database Table Configured to Edit";
-    return;
+    return "No Database Table Configured to Edit";
   }
   $base = plugins_url('wp-db-table-editor');
   $noedit = $cur->noedit;
@@ -205,7 +220,7 @@ window.addEventListener("beforeunload", function (e) {
        </script>
   </div>
 EOT;
-  echo $o;
+  return $o;
 }
 
 /*
@@ -221,7 +236,7 @@ function dbte_menu(){
     $cap = $o->cap;
     // shouldnt be null, but lets be defensive
     if(!$cap) $cap = 'edit_others_posts';
-    add_submenu_page('wp-db-table-editor', $o->title, $o->title, $cap, 'dbte_'.$o->id, 'dbte_render' );
+    add_submenu_page('wp-db-table-editor', $o->title, $o->title, $cap, 'dbte_'.$o->id, 'echo_dbte_render' );
   }
 
 }
