@@ -109,7 +109,15 @@ function dbTableEditorScripts(){
   add_action('db-table-editor_enqueue_scripts', 'dbTableEditorScripts');
 ```
 
-== Caveats ==
+== Shortcodes ==
 
+You can use a shortcode to include a dbte interface on a wordpress
+page.  Please use with care.
+
+[dbte id=table-editor-id] - (id defaults to table)
+
+
+== Caveats ==
+ * Dont put an editable table editor on your public facing screens using the shortcode!
  * Database tables are expected to have a column names `id` that is
    the primary key
