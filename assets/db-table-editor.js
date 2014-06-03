@@ -106,11 +106,20 @@ DBTableEditor.deleteHandler = function(el){
   var btn = jQuery(el);
   var id = btn.data('id');
   var rowid = btn.data('rowid');
+  var row = DBTableEditor.dataView.getItemById(rowid);
+  var rObj = {};
   btn.parents('.slick-row').addClass('active');
   if(!id) return;
   if(!btn.is('button'))btn = btn.parents('button');
   if (!confirm('Are you sure you wish to remove this row')) return;
-  jQuery.post(ajaxurl, {action:'dbte_delete', dataid:id, rowid:rowid, table:DBTableEditor.table})
+
+  // we have an empty column first for delete buttons
+  for(var i=0,c=null,v=null;c=DBTableEditor.data.columns[i+1];i++)
+    rObj[c.originalName]=row[i];
+
+  var reqArgs = jQuery.extend({action:'dbte_delete', dataid:id, rowid:rowid, table:DBTableEditor.table}, rObj);
+  console.log(rObj, reqArgs);
+  jQuery.post(ajaxurl, reqArgs)
    .success(function(data){DBTableEditor.deleteSuccess(data, id, rowid);})
    .error(DBTableEditor.deleteFail);
   return false;

@@ -306,12 +306,22 @@ function dbte_save_cb() {
       }
     }
     if($id != null){
-      $where = array('id'=>$id);
-      $wpdb->update($cur->table, $up , $where);
+      if($cur->update_cb){
+        call_user_func($cur->update_cb,$cur, $up, $cols);
+      }
+      else{
+        $where = array('id'=>$id);
+        $wpdb->update($cur->table, $up , $where);
+      }
     }
     else{
-      $wpdb->insert($cur->table, $up);
-      $new_ids[] = Array('rowId'=>$r["id"], 'dbid'=>$wpdb->insert_id);
+      if($cur->insert_cb){
+        call_user_func($cur->insert_cb,$cur, $up, $cols);
+      }
+      else{
+        $wpdb->insert($cur->table, $up);
+        $new_ids[] = Array('rowId'=>$r["id"], 'dbid'=>$wpdb->insert_id);
+      }
     }
   }
   header('Content-type: application/json');
@@ -329,7 +339,12 @@ function dbte_delete_cb(){
   $cur = dbte_current($tbl);
   if(!$cur) return;
   if($cur->noedit || ($cur->editcap && !current_user_can($cur->editcap))) return;
-  $wpdb->delete($cur->table, array('id'=>$id));
+  if($cur->delete_cb){
+    call_user_func($cur->delete_cb,$cur);
+  }
+  else{
+    $wpdb->delete($cur->table, array('id'=>$id));
+  }
   header('Content-type: application/json');
   echo "{\"deleted\":$id}";
   die();

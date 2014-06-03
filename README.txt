@@ -79,6 +79,9 @@ This supports `wp_parse_args` style arguments.
  * `columnFilters`: Default column filters, this is an array of column->val
    to be applied as default column fitlers when the page is loaded
  * `columnNameMap`: A map of actual column names to displayed label
+ * `insert_cb`, `update_cb`, `delete_cb`: functions to call when your
+   table issues these commands.  By default we insert if we have no
+   id, update otherwise.
 
 Example:
 ```
