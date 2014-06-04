@@ -62,8 +62,9 @@ class DBTE_DataTable {
    * @access public
    */
 class DBTableEditor {
-  var $table, $title, $sql, $dataFn, $id, $data, $cap, $jsFile, $noedit, $editcap,
-    $columnFilters, $columnNameMap;
+  var $table, $title, $sql, $dataFn, $id, $data, $cap, $jsFile, 
+      $noedit, $editcap, $noedit_columns, $hide_columns,
+      $columnFilters, $columnNameMap;
   function DBTableEditor($args=null){
     $args = wp_parse_args($args, array('cap'=>'edit_others_posts'));
     foreach($args as $k => $v) $this->{$k} = $v;

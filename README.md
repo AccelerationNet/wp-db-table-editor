@@ -79,6 +79,9 @@ This supports `wp_parse_args` style arguments.
  * `columnFilters`: Default column filters, this is an array of column->val
    to be applied as default column fitlers when the page is loaded
  * `columnNameMap`: A map of actual column names to displayed label
+ * `noedit_columns`, `hide_columns`: You may wish to hide some columns
+   or prevent edit.  You may do so by setting these fields to the name
+   of columns you wish hidden or uneditable (eg: the id)
 
 Example:
 ```

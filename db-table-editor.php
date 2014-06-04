@@ -61,7 +61,7 @@ function dbte_get_data_table(){
   if(!is_a($data, "DBTE_DataTable")) echo "DB-Table-Editor Cannot READ DATA SOURCE";
   $rows = $data->rows;
   $columns = $data->columns;
-  return json_encode(Array('columns'=>$columns, 'rows'=>$rows));
+  return Array('columns'=>$columns, 'rows'=>$rows);
 }
 
 /*
@@ -187,10 +187,17 @@ function dbte_render($id=null){
     <button onclick="DBTableEditor.undo();"><img src="$base/assets/images/arrow_undo.png" align="absmiddle">Undo</button>
 EOT;
   }
-  $noedit = $noedit ? "true" : "false";
-  $data = dbte_get_data_table();
-  $columnFiltersJson = json_encode($cur->columnFilters);
-  $columnNameMap = json_encode($cur->columnNameMap);
+  $args = Array(
+    "table"=>$cur->id,
+    "baseUrl"=>$base,
+    "noedit"=> $noedit,
+    "data"=>dbte_get_data_table(),
+    "columnFilters"=> $cur->columnFilters,
+    "columnNameMap" => $cur->columnNameMap,
+    "hide_columns"=>$cur->hide_columns,
+    "noedit_columns"=>$cur->noedit_columns,
+  );
+  $json = json_encode($args);
   $o = <<<EOT
   <div class="dbte-page">
     <h1>$cur->title</h1>
@@ -206,8 +213,7 @@ EOT;
     <div class="db-table-editor"></div>
     <script type="text/javascript">
 jQuery(function(){
-    DBTableEditor.onload({'table':"$cur->id", "baseUrl":"$base", 'noedit':$noedit,
-          "data": $data, "columnFilters":$columnFiltersJson, "columnNameMap":$columnNameMap});
+    DBTableEditor.onload($json);
 });
 
 if(window.addEventListener)

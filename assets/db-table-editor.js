@@ -195,6 +195,10 @@ DBTableEditor.onload = function(opts){
   var columns = DBTableEditor.data.columns;
   var columnMap = DBTableEditor.columnMap = {};
   DBTableEditor.columnNameMap = DBTableEditor.columnNameMap||{};
+  if(typeof(DBTableEditor.noedit_columns)=="string")
+    DBTableEditor.noedit_columns = DBTableEditor.noedit_columns.split(/\s*,\s*/);
+  if(typeof(DBTableEditor.hide_columns)=="string")
+    DBTableEditor.hide_columns = DBTableEditor.hide_columns.split(/\s*,\s*/);
 
   // init columns
   for( var i=0, c ; c=columns[i] ; i++){
@@ -208,6 +212,15 @@ DBTableEditor.onload = function(opts){
     }
     c.field = i;
     c.sortable = true;
+    if(jQuery.inArray(c.originalName, DBTableEditor.hide_columns)>-1){
+      c.maxWidth=c.minWidth=c.width=5;
+      c.resizable=c.selectable=c.focusable=false;
+    }
+    if(jQuery.inArray(c.originalName, DBTableEditor.noedit_columns)>-1){
+      c.focusable=false;
+      c.selectable=false;
+      c.cannotTriggerInsert=true;
+    }
     //account for buttons column at 0 if needed
     columnMap[c.id] = i; //DBTableEditor.noedit ? i : i+1;
 
