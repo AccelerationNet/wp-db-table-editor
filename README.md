@@ -102,7 +102,6 @@ if(function_exists('add_db_table_editor')){
  * `db-table-editor_enqueue_scripts` is an action that will be called
    after enqueueing all plugin scripts and before enqueueing `jsFile`
    (if it exists)
-
 ```
 function dbTableEditorScripts(){
   wp_register_script('employee-table-extensions-js',
@@ -124,4 +123,4 @@ page.  Please use with care.
 == Caveats ==
  * Dont put an editable table editor on your public facing screens using the shortcode!
  * Database tables are expected to have a column names `id` that is
-   the primary key
+   the primary key, if they dont, better gin something up, so that we can pretend

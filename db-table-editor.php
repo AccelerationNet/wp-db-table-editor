@@ -238,11 +238,17 @@ function dbte_menu(){
   $ico = plugins_url('wp-db-table-editor/assets/images/database_edit.png');
   add_menu_page('DB Table Editor', 'DB Table Editor', 'read', 'wp-db-table-editor',
                 'dbte_main_page', $ico, 50);
+
+  $displayed = 0;
   foreach($DBTE_INSTANCES as $o){
     $cap = $o->cap;
     // shouldnt be null, but lets be defensive
     if(!$cap) $cap = 'edit_others_posts';
+    if(current_user_can($cap)) $displayed++;
     add_submenu_page('wp-db-table-editor', $o->title, $o->title, $cap, 'dbte_'.$o->id, 'echo_dbte_render' );
+  }
+  if(!$displayed){
+    remove_menu_page('wp-db-table-editor');
   }
 
 }
@@ -269,7 +275,11 @@ function dbte_main_page(){
 
 EOT;
   foreach($DBTE_INSTANCES as $o){
-    echo "<li><a href=\"admin.php?page=dbte_$o->id\">$o->title</a></li>";
+    $cap = $o->cap;
+    // shouldnt be null, but lets be defensive
+    if(!$cap) $cap = 'edit_others_posts';
+    if(current_user_can($cap))
+      echo "<li><a href=\"admin.php?page=dbte_$o->id\">$o->title</a></li>";
   }
   echo "</ul>";
 }
@@ -290,8 +300,9 @@ function dbte_save_cb() {
 
 
   //var_dump($d);die();
-  $cols = $d["columns"];
-  $rows = $d["rows"];
+  $cols = @$d["columns"];
+  $rows = @$d["rows"];
+  $idxs = @$d["modifiedIdxs"];
   $len = count($cols);
 
   $idIdx = 0; 
@@ -302,6 +313,7 @@ function dbte_save_cb() {
   }
   // echo "id: $idIdx, "; print_r($rows);
   $i=0;
+  $ridx = 0;
   $new_ids = Array();
   foreach($rows as $r){
     $id=@$r[$idIdx];
@@ -313,7 +325,7 @@ function dbte_save_cb() {
     }
     if($id != null){
       if($cur->update_cb){
-        call_user_func($cur->update_cb,$cur, $up, $cols);
+        call_user_func($cur->update_cb,$cur, $up, $cols, $idxs[$ridx]);
       }
       else{
         $where = array('id'=>$id);
@@ -322,13 +334,14 @@ function dbte_save_cb() {
     }
     else{
       if($cur->insert_cb){
-        call_user_func($cur->insert_cb,$cur, $up, $cols);
+        call_user_func($cur->insert_cb,$cur, $up, $cols, $idxs[$ridx]);
       }
       else{
         $wpdb->insert($cur->table, $up);
         $new_ids[] = Array('rowId'=>$r["id"], 'dbid'=>$wpdb->insert_id);
       }
     }
+    $ridx++;
   }
   header('Content-type: application/json');
   echo json_encode($new_ids);

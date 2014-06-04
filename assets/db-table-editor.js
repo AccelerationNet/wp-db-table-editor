@@ -42,16 +42,22 @@ DBTableEditor.save = function(){
   jQuery('button.save img').attr('src',src.replace('accept.png','loading.gif'));
 
   // the last time we modified a row should contain all the final modifications
-  var h = {},i,r, toSave=[], mod = DBTableEditor.modifiedRows.slice(0);
+  var it,h = {},i,r, toSave=[], mod = DBTableEditor.modifiedRows.slice(0), modified;
   while(( r = mod.pop() )){
-    if(h[r.item.id]) continue;
-    h[r.item.id] = true;
+    // cells have a delete idx to be removed
+    if((it = h[r.item.id])){
+      it.modifiedIdxs.push(r.cell-1);
+      continue;
+    }
+    r.item.modifiedIdxs = [r.cell-1];
+    h[r.item.id] = r.item;
     toSave.push(r.item);
   }
   //console.log(toSave);
   var cols = DBTableEditor.data.columns.map(function(c){return c.originalName;});
   cols.shift(); // remove buttons
   var toSend = JSON.stringify({
+    modifiedIdxs:toSave.map(function(it){return it.modifiedIdxs;}),
     columns:cols,
     rows:toSave
   });
