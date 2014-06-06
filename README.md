@@ -82,6 +82,9 @@ This supports `wp_parse_args` style arguments.
  * `noedit_columns`, `hide_columns`: You may wish to hide some columns
    or prevent edit.  You may do so by setting these fields to the name
    of columns you wish hidden or uneditable (eg: the id)
+ * `insert_cb`,`update_cb`, `delete_cb`: function names to be called with
+   the dbte, update array, column array and modified indexes array
+   `call_user_func($cur->insert_cb,$cur, $up, $cols, $idxs);`
 
 Example:
 ```
@@ -96,6 +99,16 @@ if(function_exists('add_db_table_editor')){
 
 }
 ```
+
+== Adding an Interface on the fly ==
+
+If we go to look up a database table editor and we dont find it, but
+there is a function named dbte_create_$tbl that matches, we will call
+that function expecting it to return a dbte instance. This is useful
+in situations where we may not have the data for a table editor in all
+circumstances (EG: not every page has a member id, so only do it on
+that particular page).
+
 
 = Hooks / Actions =
 

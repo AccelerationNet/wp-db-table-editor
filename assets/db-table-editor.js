@@ -1,6 +1,15 @@
 if(typeof(console)=='undefined')console={log:function(){}};
 if(typeof(DBTableEditor)=='undefined') DBTableEditor={};
-
+DBTableEditor.parseQuery = function(query) {
+    var obj = {};
+    if(!query || query.length < 1) return obj;
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      obj[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);
+    }
+    return obj;
+};
 DBTableEditor.commandQueue =[];
 DBTableEditor.queueAndExecuteCommand = function(item, column, editCommand){
   DBTableEditor.commandQueue.push(editCommand);
@@ -151,7 +160,11 @@ DBTableEditor.exportCSV = function(){
   var url = jQuery(DBTableEditor.grid.getHeaderRow())
    .find(':input').filter(function(){return jQuery(this).val().length>0;})
    .serialize();
-  var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table+'&'+url;
+  var args=jQuery.extend({}, DBTableEditor.query, DBTableEditor.hashQuery);
+  delete(args["page"]);
+  var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table
+   +'&'+jQuery.param(args)
+   +'&'+url;
   console.log('Redirecting to export:', url);
   window.location=url;
 };
@@ -195,6 +208,9 @@ DBTableEditor.addPendingSave = function(args){
 
 DBTableEditor.onload = function(opts){
   //console.log('Loading db table');
+  DBTableEditor.query = DBTableEditor.parseQuery(window.location.search.substring(1));
+  DBTableEditor.hashQuery = DBTableEditor.parseQuery(window.location.hash.substring(1));
+
   jQuery.extend(DBTableEditor, opts);
   if(!DBTableEditor.data){ return console.log("No Data for DBTableEditor");}
   var rows = DBTableEditor.data.rows;
@@ -205,6 +221,7 @@ DBTableEditor.onload = function(opts){
     DBTableEditor.noedit_columns = DBTableEditor.noedit_columns.split(/\s*,\s*/);
   if(typeof(DBTableEditor.hide_columns)=="string")
     DBTableEditor.hide_columns = DBTableEditor.hide_columns.split(/\s*,\s*/);
+  DBTableEditor.default_values = DBTableEditor.parseQuery(opts.default_values);
 
   // init columns
   for( var i=0, c ; c=columns[i] ; i++){
@@ -290,6 +307,9 @@ DBTableEditor.onload = function(opts){
   DBTableEditor.clearPendingSaves();
   grid.onAddNewRow.subscribe(function (e, args) {
     var item = args.item;
+    jQuery.each(DBTableEditor.default_values,function(k,v){
+      item[DBTableEditor.columnMap[k]]=v;
+    });
     grid.invalidateRow(rows.length);
     item.id = DBTableEditor.newId();
     dataView.addItem(item);

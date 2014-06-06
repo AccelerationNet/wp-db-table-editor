@@ -140,8 +140,13 @@ function dbte_current($tbl=null){
   global $DBTE_CURRENT, $DBTE_INSTANCES;
   $cur = $DBTE_CURRENT;
   if($cur && ($cur->id == $tbl || !$tbl)) return $cur;
-  if($tbl) foreach($DBTE_INSTANCES as $o){
-    if($tbl == $o->id) $cur = $DBTE_CURRENT = $o;
+  if($tbl){
+    foreach($DBTE_INSTANCES as $o){
+      if($tbl == $o->id) $cur = $DBTE_CURRENT = $o;
+    }
+    if(!$cur && function_exists('dbte_create_'.$tbl)){
+      $cur = $DBTE_CURRENT = call_user_func('dbte_create_'.$tbl);
+    }
   }
   return $cur;
 }
@@ -196,6 +201,7 @@ EOT;
     "columnNameMap" => $cur->columnNameMap,
     "hide_columns"=>$cur->hide_columns,
     "noedit_columns"=>$cur->noedit_columns,
+    "default_values"=>$cur->default_values,
   );
   $json = json_encode($args);
   $o = <<<EOT
