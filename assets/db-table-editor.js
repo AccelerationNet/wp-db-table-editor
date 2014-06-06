@@ -289,7 +289,9 @@ DBTableEditor.onload = function(opts){
     defaultColumnWidth:120,
     explicitInitialization: true
   };
-  DBTableEditor.columnFilters = DBTableEditor.columnFilters || {};
+
+  DBTableEditor.columnFilters = jQuery.extend(DBTableEditor.columnFilters,DBTableEditor.query,DBTableEditor.hashQuery);
+  delete(DBTableEditor.columnFilters["page"]);
   var dataView = DBTableEditor.dataView = new Slick.Data.DataView({ inlineFilters: true });
   var grid = DBTableEditor.grid = new Slick.Grid('.db-table-editor', dataView, columns, options);
   grid.setSelectionModel(new Slick.CellSelectionModel());
