@@ -66,6 +66,7 @@ This supports `wp_parse_args` style arguments.
  * `title`: what shows up in the H1 on the screen and in menues
  * `table`: the table we wish to display / edit
  * `id`: the admin interface id (defaults to table)
+ * `id_column`: the column in each row that names the id for the row
  * `dataFn`: a function that returns the data to be displayed /
    edited, defaults to `select * from {table}`. This should return ARRAY_N
    through wpdb->get_results. Alternatively it may return a DBTE_DataTable;
@@ -79,9 +80,12 @@ This supports `wp_parse_args` style arguments.
  * `columnFilters`: Default column filters, this is an array of column->val
    to be applied as default column fitlers when the page is loaded
  * `columnNameMap`: A map of actual column names to displayed label
- * `insert_cb`, `update_cb`, `delete_cb`: functions to call when your
-   table issues these commands.  By default we insert if we have no
-   id, update otherwise.
+ * `noedit_columns`, `hide_columns`: You may wish to hide some columns
+   or prevent edit.  You may do so by setting these fields to the name
+   of columns you wish hidden or uneditable (eg: the id)
+ * `insert_cb`,`update_cb`, `delete_cb`: function names to be called with
+   the dbte, update array, column array and modified indexes array
+   `call_user_func($cur->insert_cb,$cur, $up, $cols, $idxs);`
 
 Example:
 ```
