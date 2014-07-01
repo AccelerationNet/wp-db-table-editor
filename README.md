@@ -66,6 +66,7 @@ This supports `wp_parse_args` style arguments.
  * `title`: what shows up in the H1 on the screen and in menues
  * `table`: the table we wish to display / edit
  * `id`: the admin interface id (defaults to table)
+ * `id_column`: the column in each row that names the id for the row
  * `dataFn`: a function that returns the data to be displayed /
    edited, defaults to `select * from {table}`. This should return ARRAY_N
    through wpdb->get_results. Alternatively it may return a DBTE_DataTable;

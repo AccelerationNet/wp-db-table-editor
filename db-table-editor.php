@@ -202,6 +202,7 @@ EOT;
     "hide_columns"=>$cur->hide_columns,
     "noedit_columns"=>$cur->noedit_columns,
     "default_values"=>$cur->default_values,
+    "id_column"=>$cur->id_column,
   );
   $json = json_encode($args);
   $o = <<<EOT

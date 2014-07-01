@@ -32,7 +32,7 @@ DBTableEditor.saveCB = function(data){
   var pair;
   while((pair = data.pop())){
     var item = DBTableEditor.dataView.getItemById( pair.rowId );
-    item[DBTableEditor.columnMap['id']] = pair.dbid;
+    item[DBTableEditor.columnMap[DBTableEditor.id_column]] = pair.dbid;
     DBTableEditor.dataView.updateItem(pair.rowId, item);
   }
   DBTableEditor.clearPendingSaves();
@@ -119,7 +119,7 @@ DBTableEditor.deleteFail = function(err, resp){
 
 DBTableEditor.deleteHandler = function(el){
   var btn = jQuery(el);
-  var id = btn.data('id');
+  var id = btn.data(DBTableEditor.id_column);
   var rowid = btn.data('rowid');
   var row = DBTableEditor.dataView.getItemById(rowid);
   var rObj = {};
@@ -142,8 +142,8 @@ DBTableEditor.deleteHandler = function(el){
 DBTableEditor.extraButtons=[];
 DBTableEditor.rowButtonFormatter = function(row, cell, value, columnDef, dataContext) {
   // if(row==0)console.log(row,cell, value, columnDef, dataContext);
-  var id = dataContext[DBTableEditor.columnMap['id']];
-  var rowid = dataContext['id'];
+  var id = dataContext[DBTableEditor.columnMap[DBTableEditor.id_column]];
+  var rowid = dataContext[DBTableEditor.id_column];
   if(!id) return null;
   var url = DBTableEditor.baseUrl+'/assets/images/delete.png';
   var out = '<button title="Delete this Row" class="delete" onclick="DBTableEditor.deleteHandler(this);return false;"'+
@@ -207,11 +207,13 @@ DBTableEditor.addPendingSave = function(args){
 };
 
 DBTableEditor.onload = function(opts){
+  // TODO: switch to objects so there can be more than one table to edit *sigh*
   //console.log('Loading db table');
   DBTableEditor.query = DBTableEditor.parseQuery(window.location.search.substring(1));
   DBTableEditor.hashQuery = DBTableEditor.parseQuery(window.location.hash.substring(1));
 
   jQuery.extend(DBTableEditor, opts);
+  if(!DBTableEditor.id_column) DBTableEditor.id_column='id';
   if(!DBTableEditor.data){ return console.log("No Data for DBTableEditor");}
   var rows = DBTableEditor.data.rows;
   var columns = DBTableEditor.data.columns;
@@ -247,7 +249,7 @@ DBTableEditor.onload = function(opts){
     //account for buttons column at 0 if needed
     columnMap[c.id] = i; //DBTableEditor.noedit ? i : i+1;
 
-    if(c.id!="id" && !c.editor){
+    if(c.id!=DBTableEditor.id_column && !c.editor){
       if(c.id.search('date')>=0){
         c.editor = Slick.Editors.Date;
       }
@@ -264,15 +266,15 @@ DBTableEditor.onload = function(opts){
       else c.editor = Slick.Editors.LongText;
     }
   }
-  if(columnMap['id']==null) DBTableEditor.noedit = true;
+  if(columnMap[DBTableEditor.id_column]==null) DBTableEditor.noedit = true;
   if(!DBTableEditor.noedit)
     columns.unshift({id: 'buttons', formatter:DBTableEditor.rowButtonFormatter, width:75});
 
   //init rows
   for(var i=0, r ; r=rows[i] ; i++){
     // r.shift(null);
-    var rid = DBTableEditor.newId((columnMap["id"]!=null) && r[columnMap["id"]]);
-    r["id"] = rid;
+    var rid = DBTableEditor.newId((columnMap[DBTableEditor.id_column]!=null) && r[columnMap[DBTableEditor.id_column]]);
+    r[DBTableEditor.id_column] = rid;
     if(!DBTableEditor.noedit) r.push(null);
   }
 
