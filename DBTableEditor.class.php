@@ -71,6 +71,7 @@ class DBTableEditor {
     foreach($args as $k => $v) $this->{$k} = $v;
     if(!$this->id) $this->id = $this->table;
     if(!$this->title) $this->title = $this->table;
+    if(!$this->id_column) $this->id_column = 'id';
   }
   /*
    * Gets data from the data source (either sql, or dataFn (prefering sql)

@@ -311,14 +311,15 @@ function dbte_save_cb() {
   $rows = @$d["rows"];
   $idxs = @$d["modifiedIdxs"];
   $len = count($cols);
+  $id_col = $cur->id_column;
 
   $idIdx = 0; 
   $i=0;
   foreach($cols as $c){
-    if($c=='id') $idIdx = $i;
+    if($c==$id_col) $idIdx = $i;
     $i++;
   }
-  // echo "id: $idIdx, "; print_r($rows);
+
   $i=0;
   $ridx = 0;
   $new_ids = Array();
@@ -335,7 +336,7 @@ function dbte_save_cb() {
         call_user_func($cur->update_cb,$cur, $up, $cols, $idxs[$ridx]);
       }
       else{
-        $where = array('id'=>$id);
+        $where = array($id_col=>$id);
         $wpdb->update($cur->table, $up , $where);
       }
     }
@@ -365,11 +366,12 @@ function dbte_delete_cb(){
   $cur = dbte_current($tbl);
   if(!$cur) return;
   if($cur->noedit || ($cur->editcap && !current_user_can($cur->editcap))) return;
+  $id_col = $cur->id_column;
   if($cur->delete_cb){
     call_user_func($cur->delete_cb,$cur);
   }
   else{
-    $wpdb->delete($cur->table, array('id'=>$id));
+    $wpdb->delete($cur->table, array($id_col=>$id));
   }
   header('Content-type: application/json');
   echo "{\"deleted\":$id}";

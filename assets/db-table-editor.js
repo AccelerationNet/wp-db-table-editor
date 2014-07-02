@@ -274,7 +274,8 @@ DBTableEditor.onload = function(opts){
   for(var i=0, r ; r=rows[i] ; i++){
     // r.shift(null);
     var rid = DBTableEditor.newId((columnMap[DBTableEditor.id_column]!=null) && r[columnMap[DBTableEditor.id_column]]);
-    r[DBTableEditor.id_column] = rid;
+    // THIS MUST BE named ID in order for slickgrid to work
+    r.id = rid;
     if(!DBTableEditor.noedit) r.push(null);
   }
 
