@@ -214,6 +214,7 @@ DBTableEditor.onload = function(opts){
 
   jQuery.extend(DBTableEditor, opts);
   if(!DBTableEditor.id_column) DBTableEditor.id_column='id';
+  DBTableEditor.id_column = DBTableEditor.id_column.toLowerCase();
   if(!DBTableEditor.data){ return console.log("No Data for DBTableEditor");}
   var rows = DBTableEditor.data.rows;
   var columns = DBTableEditor.data.columns;
@@ -266,7 +267,10 @@ DBTableEditor.onload = function(opts){
       else c.editor = Slick.Editors.LongText;
     }
   }
-  if(columnMap[DBTableEditor.id_column]==null) DBTableEditor.noedit = true;
+  if(columnMap[DBTableEditor.id_column]==null){
+    console.log('Couldnt find a column:', DBTableEditor.id_column," defaulting to noedit");
+    DBTableEditor.noedit = true;
+  }
   if(!DBTableEditor.noedit)
     columns.unshift({id: 'buttons', formatter:DBTableEditor.rowButtonFormatter, width:75});
 
