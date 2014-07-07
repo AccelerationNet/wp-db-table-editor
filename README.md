@@ -27,6 +27,7 @@ It supports:
    (defaults to: edit_others_posts)
   * editing defaults to the same permission as viewing if not specified
  * CSV exports of filtered grid
+ * Custom primary key names (but must be a single value / column)
 
 # Reasons and Expectations #
 
@@ -136,5 +137,3 @@ page.  Please use with care.
 
 ## Caveats ##
  * Dont put an editable table editor on your public facing screens using the shortcode!
- * Database tables are expected to have a column names `id` that is
-   the primary key, if they dont, better gin something up, so that we can pretend
