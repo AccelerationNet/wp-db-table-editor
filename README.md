@@ -1,4 +1,4 @@
-=## WP-DB-Table-Editor ###
+### WP-DB-Table-Editor ###
 
 Contributers: bobbysmith007
 Donate link: https://www.acceleration.net/programming/donate-to-acceleration-net/
