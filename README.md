@@ -1,4 +1,4 @@
-=== WP-DB-Table-Editor ===
+=## WP-DB-Table-Editor ###
 
 Contributers: bobbysmith007
 Donate link: https://www.acceleration.net/programming/donate-to-acceleration-net/
@@ -9,7 +9,7 @@ Stable tag: trunk
 License: BSD
 URL: https://github.com/AccelerationNet/wp-db-table-editor/
 
-== Description ==
+## Description ##
 
 This is a Wordpress plugin that allows direct excel-like editing of
 tables in your Wordpress database.  It's goals are to provide useful,
@@ -28,7 +28,7 @@ It supports:
   * editing defaults to the same permission as viewing if not specified
  * CSV exports of filtered grid
 
-= Reasons and Expectations =
+# Reasons and Expectations #
 
 Previously my company had been using DB-toolkit to provide minimal
 database interfaces for custom tables through the Wordpress admin.
@@ -46,7 +46,7 @@ safely in source control (a problem I had when DB-toolkit would
 upgrade and lose all configuration).
 
 
-== Installation ==
+## Installation ##
 
 This is installed the same way all wordpress plugins:
 
@@ -57,7 +57,7 @@ This is installed the same way all wordpress plugins:
 
 
 
-= Adding an interface =
+# Adding an interface #
 
 DB-Table Editor Interfaces are added by calling the
 add_db_table_editor function in your theme's `functions.php` file.
@@ -101,7 +101,7 @@ if(function_exists('add_db_table_editor')){
 }
 ```
 
-== Adding an Interface on the fly ==
+## Adding an Interface on the fly ##
 
 If we go to look up a database table editor and we dont find it, but
 there is a function named dbte_create_$tbl that matches, we will call
@@ -111,7 +111,7 @@ circumstances (EG: not every page has a member id, so only do it on
 that particular page).
 
 
-= Hooks / Actions =
+# Hooks / Actions #
 
  * `db-table-editor_enqueue_scripts` is an action that will be called
    after enqueueing all plugin scripts and before enqueueing `jsFile`
@@ -125,7 +125,7 @@ function dbTableEditorScripts(){
   add_action('db-table-editor_enqueue_scripts', 'dbTableEditorScripts');
 ```
 
-= Shortcodes =
+# Shortcodes #
 
 You can use a shortcode to include a dbte interface on a wordpress
 page.  Please use with care.
@@ -134,7 +134,7 @@ page.  Please use with care.
 
 
 
-== Caveats ==
+## Caveats ##
  * Dont put an editable table editor on your public facing screens using the shortcode!
  * Database tables are expected to have a column names `id` that is
    the primary key, if they dont, better gin something up, so that we can pretend

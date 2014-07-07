@@ -371,10 +371,11 @@ function dbte_delete_cb(){
     call_user_func($cur->delete_cb,$cur);
   }
   else{
-    $wpdb->delete($cur->table, array($id_col=>$id));
+    // TODO: ANSI Compliant way to do this?
+    $wpdb->delete($cur->table, array("`".$id_col."`"=>$id));
   }
   header('Content-type: application/json');
-  echo "{\"deleted\":$id}";
+  echo json_encode(Array('deleted',$id));
   die();
 }
 add_action( 'wp_ajax_dbte_delete', 'dbte_delete_cb' );
