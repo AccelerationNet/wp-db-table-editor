@@ -98,6 +98,7 @@ DBTableEditor.filterRow = function (item) {
   for (var columnId in columnFilters) {
     if (columnId !== undefined && columnFilters[columnId] !== "") {
       var c = grid.getColumns()[grid.getColumnIndex(columnId)];
+      if(!c) continue;
       var filterVal = columnFilters[columnId];
       var re = new RegExp(filterVal,'i');
       if (item[c.field].toString().search(re) < 0) {
@@ -398,11 +399,13 @@ DBTableEditor.onload = function(opts){
 
   grid.init();
   if(columns.length < 8) grid.autosizeColumns();
+
   dataView.beginUpdate();
   dataView.setItems(rows);
   dataView.setFilter(DBTableEditor.filterRow);
   dataView.endUpdate();
   dataView.refresh();
+
   DBTableEditor.updatePagingInfo();
 
   jQuery('button.save').attr("disabled", null);
