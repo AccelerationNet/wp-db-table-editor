@@ -98,6 +98,7 @@ DBTableEditor.filterRow = function (item) {
   for (var columnId in columnFilters) {
     if (columnId !== undefined && columnFilters[columnId] !== "") {
       var c = grid.getColumns()[grid.getColumnIndex(columnId)];
+      if(!c) continue;
       var filterVal = columnFilters[columnId];
       var re = new RegExp(filterVal,'i');
       if (item[c.field].toString().search(re) < 0) {
@@ -119,12 +120,15 @@ DBTableEditor.deleteFail = function(err, resp){
 
 DBTableEditor.deleteHandler = function(el){
   var btn = jQuery(el);
-  var id = btn.data(DBTableEditor.id_column);
+  var id = btn.data("id");
   var rowid = btn.data('rowid');
   var row = DBTableEditor.dataView.getItemById(rowid);
   var rObj = {};
   btn.parents('.slick-row').addClass('active');
-  if(!id) return;
+  if(!id){
+    console.log("Cannot delete, no ID", btn.data());
+    return;
+  }
   if(!btn.is('button'))btn = btn.parents('button');
   if (!confirm('Are you sure you wish to remove this row')) return;
 
@@ -143,7 +147,7 @@ DBTableEditor.extraButtons=[];
 DBTableEditor.rowButtonFormatter = function(row, cell, value, columnDef, dataContext) {
   // if(row==0)console.log(row,cell, value, columnDef, dataContext);
   var id = dataContext[DBTableEditor.columnMap[DBTableEditor.id_column]];
-  var rowid = dataContext[DBTableEditor.id_column];
+  var rowid = dataContext.id; // uses id, NOT id_column
   if(!id) return null;
   var url = DBTableEditor.baseUrl+'/assets/images/delete.png';
   var out = '<button title="Delete this Row" class="delete" onclick="DBTableEditor.deleteHandler(this);return false;"'+
@@ -395,11 +399,13 @@ DBTableEditor.onload = function(opts){
 
   grid.init();
   if(columns.length < 8) grid.autosizeColumns();
+
   dataView.beginUpdate();
   dataView.setItems(rows);
   dataView.setFilter(DBTableEditor.filterRow);
   dataView.endUpdate();
   dataView.refresh();
+
   DBTableEditor.updatePagingInfo();
 
   jQuery('button.save').attr("disabled", null);
