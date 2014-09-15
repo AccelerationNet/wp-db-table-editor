@@ -4,7 +4,7 @@ Contributers: bobbysmith007
 Donate link: https://www.acceleration.net/programming/donate-to-acceleration-net/
 Tags: admin screens, database, editor
 Requires at least: 3.0.0
-Tested Up To: 3.8.1
+Tested Up To: 4.0.0
 Stable tag: trunk
 License: BSD
 URL: https://github.com/AccelerationNet/wp-db-table-editor/
@@ -135,6 +135,14 @@ page.  Please use with care.
 
 
 == Caveats ==
+
  * Dont put an editable table editor on your public facing screens using the shortcode!
  * Database tables are expected to have a column names `id` that is
    the primary key, if they dont, better gin something up, so that we can pretend
+
+
+== Troubleshooting ==
+
+ * My delete button is missing / I Can't Edit
+  * You either dont have `editcap` or `id_column` is misconfigured
+  * https://github.com/AccelerationNet/wp-db-table-editor/issues/5
