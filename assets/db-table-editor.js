@@ -100,8 +100,8 @@ DBTableEditor.save = function(){
   // the last time we modified a row should contain all the final modifications
   var it,h = {},i,r, toSave=[], mod = DBTableEditor.modifiedRows.slice(0), modified;
   while(( r = mod.pop() )){
-    var column = DBTableEditor.data.columns[r.cell];
-    if(column.isDate){
+    var column = DBTableEditor.data.columns[r.cell-1];
+    if(column && column.isDate){
       var dv = DBTableEditor.parseDate(r.item[r.cell-1]);
       if(dv) r.item[r.cell-1] = dv.toISOString();
       console.log(r.item, dv, r.cell, column, r.item[r.cell-1]);
