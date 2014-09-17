@@ -17,12 +17,9 @@ if ( !Date.prototype.toISOString ) {
 DBTableEditor.defaultOffset = new Date().getTimezoneOffset();
 DBTableEditor.parseDate = function(ds, dontRec){
   if(!ds) return null;
-  else if(ds.getTime) return ds;
-  else if(typeof(ds)!='string') return null;
   var m = moment(ds);
   if(!m.isValid) return null;
   return moment(ds).toDate();
-  return d;
 };
 
 DBTableEditor.toISO8601 = function(ds){
@@ -78,7 +75,9 @@ DBTableEditor.saveCB = function(data){
 
   var pair;
   while((pair = data.pop())){
+    if(!pair.rowId) continue;
     var item = DBTableEditor.dataView.getItemById( pair.rowId );
+    console.log(item, pair.rowId);
     item[DBTableEditor.columnMap[DBTableEditor.id_column]] = pair.dbid;
     DBTableEditor.dataView.updateItem(pair.rowId, item);
   }
@@ -100,7 +99,8 @@ DBTableEditor.save = function(){
   // the last time we modified a row should contain all the final modifications
   var it,h = {},i,r, toSave=[], mod = DBTableEditor.modifiedRows.slice(0), modified;
   while(( r = mod.pop() )){
-    var column = DBTableEditor.data.columns[r.cell-1];
+    var column = DBTableEditor.data.columns[r.cell];
+    // console.log(column, r.cell);
     if(column && column.isDate){
       var dv = DBTableEditor.parseDate(r.item[r.cell-1]);
       if(dv) r.item[r.cell-1] = dv.toISOString();
@@ -414,18 +414,27 @@ DBTableEditor.onload = function(opts){
         item[i] = v;
       }
     }
+    args.item = item;
     jQuery.each(DBTableEditor.default_values,function(k,v){
       item[DBTableEditor.columnMap[k]]=v;
     });
     grid.invalidateRow(rows.length);
-    item.id = DBTableEditor.newId();
+    item.rowId = item.id = DBTableEditor.newId();
     item.newRow = true;
     dataView.addItem(item);
     grid.updateRowCount();
     grid.render();
-    DBTableEditor.addPendingSave(args);
+    var cidx = grid.getColumnIndex(args.column.id);
+    var ridx = DBTableEditor.grid.getDataLength()-1;
+    //match the other save args
+    DBTableEditor.addPendingSave(
+       { item:item,
+         row: ridx,
+         cell: cidx,
+         grid: args.grid
+       });
     DBTableEditor.mostRecentEdit = new Date();
-    nextCell({row:DBTableEditor.grid.getDataLength()-1, cell:max+1});
+    nextCell({row:ridx, cell:cidx});
   });
 
   grid.onCellChange.subscribe(function(e, args){
