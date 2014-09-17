@@ -1,5 +1,52 @@
 if(typeof(console)=='undefined')console={log:function(){}};
 if(typeof(DBTableEditor)=='undefined') DBTableEditor={};
+
+if ( !Date.prototype.toISOString ) {
+  ( function() {
+    function pad(number) {
+      if ( number < 10 ) {
+        return '0' + number;
+      }
+      return number;
+    }
+    Date.prototype.toISOString = function() {
+      return moment(this).toISOString();
+    };
+  }() );
+}
+DBTableEditor.defaultOffset = new Date().getTimezoneOffset();
+DBTableEditor.parseDate = function(ds, dontRec){
+  if(!ds) return null;
+  else if(ds.getTime) return ds;
+  else if(typeof(ds)!='string') return null;
+  var m = moment(ds);
+  if(!m.isValid) return null;
+  return moment(ds).toDate();
+  return d;
+};
+
+DBTableEditor.toISO8601 = function(ds){
+  var d = DBTableEditor.parseDate(ds);
+  if(d) return d.toISOString();
+  return null;
+};
+
+
+// based on https://github.com/brondavies/SlickGrid/commit/d5966858cd4f7591ba3da5789009b488ad05b021#diff-7f1ab5db3c0316e19a9ee635a1e2f2d0R1374
+DBTableEditor.defaultValueFormatter = function (row, cell, value, columnDef, dataContext) {
+  var dv = DBTableEditor.parseDate(value);
+  //console.log(row, cell, value, columnDef, dv);
+  if (value == null) {
+    return "";
+  } else if (value.toLocaleDateString ) {
+    return value.toLocaleDateString();
+  } else if (dv && dv.toLocaleDateString ) {
+    return dv.toLocaleDateString();
+  } else {
+    return (value + "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+};
+
 DBTableEditor.parseQuery = function(query) {
     var obj = {};
     if(!query || query.length < 1) return obj;
@@ -53,6 +100,13 @@ DBTableEditor.save = function(){
   // the last time we modified a row should contain all the final modifications
   var it,h = {},i,r, toSave=[], mod = DBTableEditor.modifiedRows.slice(0), modified;
   while(( r = mod.pop() )){
+    var column = DBTableEditor.data.columns[r.cell];
+    if(column.isDate){
+      var dv = DBTableEditor.parseDate(r.item[r.cell-1]);
+      if(dv) r.item[r.cell-1] = dv.toISOString();
+      console.log(r.item, dv, r.cell, column, r.item[r.cell-1]);
+    }
+
     // cells have a delete idx to be removed
     if((it = h[r.item.id])){
       it.modifiedIdxs.push(r.cell-1);
@@ -95,14 +149,39 @@ DBTableEditor.filterRow = function (item) {
   //console.log(item);
   var columnFilters = DBTableEditor.columnFilters,
       grid = DBTableEditor.grid;
+  // dont filter the new row
+  if(item.newRow) return true;
   for (var columnId in columnFilters) {
     if (columnId !== undefined && columnFilters[columnId] !== "") {
-      var c = grid.getColumns()[grid.getColumnIndex(columnId)];
+      var cidx = grid.getColumnIndex(columnId);
+      var c = grid.getColumns()[cidx];
       if(!c) continue;
       var filterVal = columnFilters[columnId];
-      var re = new RegExp(filterVal,'i');
-      if (item[c.field].toString().search(re) < 0) {
-        return false;
+      if(filterVal && filterVal.length > 0){
+        // if we have a formatted value, lets check our value both formatted
+        // and unformatted against the search term both formatted and unformatted
+        // primarily to standardize dates currently
+        if( c.formatter ){
+          var re = new RegExp(filterVal,'i');
+          var val = item[c.field] && item[c.field].toString();
+          if( !val ) continue;
+          // row, cell, value, columnDef, dataContext
+          var formatted = c.formatter(item, cidx, val, c, null);
+          var formattedFilter = c.formatter(item, cidx, filterVal, c, null);
+          var reformattedFilter = new RegExp(formattedFilter,'i');
+          if ((val.search(re) < 0)
+              && (val.search(reformattedFilter) < 0)
+              && (formatted.search(re) < 0)
+              && (formatted.search(reformattedFilter) < 0)) {
+            return false;
+          }
+        }
+        else{
+          var re = new RegExp(filterVal,'i');
+          if (item[c.field].toString().search(re) < 0) {
+            return false;
+          }
+        }
       }
     }
   }
@@ -137,7 +216,7 @@ DBTableEditor.deleteHandler = function(el){
     rObj[c.originalName]=row[i];
 
   var reqArgs = jQuery.extend({action:'dbte_delete', dataid:id, rowid:rowid, table:DBTableEditor.table}, rObj);
-  console.log(rObj, reqArgs);
+  //console.log(rObj, reqArgs);
   jQuery.post(ajaxurl, reqArgs)
    .success(function(data){DBTableEditor.deleteSuccess(data, id, rowid);})
    .error(DBTableEditor.deleteFail);
@@ -233,6 +312,15 @@ DBTableEditor.onload = function(opts){
   // init columns
   for( var i=0, c ; c=columns[i] ; i++){
     c.id=c.name.toLowerCase();
+    if(c.isDate === null) c.isDate = false;
+    if(c.id.indexOf("date")>=0) c.isDate = true;
+    if(c.isDate){
+      if(!c.formatter) c.formatter = DBTableEditor.defaultValueFormatter;
+      if(!c.editor) c.editor = Slick.Editors.Date;
+    }
+
+
+
     c.originalName = c.name;
     if(DBTableEditor.columnNameMap[c.name]){
       c.name = DBTableEditor.columnNameMap[c.name];
@@ -255,9 +343,6 @@ DBTableEditor.onload = function(opts){
     columnMap[c.id] = i; //DBTableEditor.noedit ? i : i+1;
 
     if(c.id!=DBTableEditor.id_column && !c.editor){
-      if(c.id.search('date')>=0){
-        c.editor = Slick.Editors.Date;
-      }
       var maxLen = 0;
       for(var j=0 ; j < 100 ; j++){
         if(rows[j] && rows[j][c.field]){
@@ -307,6 +392,7 @@ DBTableEditor.onload = function(opts){
   var grid = DBTableEditor.grid = new Slick.Grid('.db-table-editor', dataView, columns, options);
   grid.setSelectionModel(new Slick.CellSelectionModel());
   var nextCell = function (args){
+    if(!args) return;
     var ri = args.row === null ? rows.length-1 : args.row,
         ci = args.cell=== null ? 1 : args.cell + 1 ;
     if(ci >= columns.length){
@@ -319,18 +405,27 @@ DBTableEditor.onload = function(opts){
 
   DBTableEditor.clearPendingSaves();
   grid.onAddNewRow.subscribe(function (e, args) {
-    var item = args.item;
+    var newItem = args.item;
+    var item = [], v, max=0;
+    for(var i=0; i < DBTableEditor.data.columns.length ; i++){
+      v  = newItem[i];
+      if(v){
+        max = i;
+        item[i] = v;
+      }
+    }
     jQuery.each(DBTableEditor.default_values,function(k,v){
       item[DBTableEditor.columnMap[k]]=v;
     });
     grid.invalidateRow(rows.length);
     item.id = DBTableEditor.newId();
+    item.newRow = true;
     dataView.addItem(item);
     grid.updateRowCount();
     grid.render();
     DBTableEditor.addPendingSave(args);
     DBTableEditor.mostRecentEdit = new Date();
-    nextCell(args);
+    nextCell({row:DBTableEditor.grid.getDataLength()-1, cell:max+1});
   });
 
   grid.onCellChange.subscribe(function(e, args){

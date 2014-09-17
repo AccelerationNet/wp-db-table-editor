@@ -112,7 +112,10 @@ function dbte_scripts($hook){
     array('slick-core-js'));
   wp_enqueue_script('slick-grid-editors', 
     $base.'/assets/SlickGrid/slick.editors.js',
-    array('slick-core-js'));
+                    array('slick-core-js', 'jquery-ui-datepicker'));
+
+  wp_enqueue_style('dbte-jquery-ui-css',
+    'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/smoothness/jquery-ui.css');
 
   wp_enqueue_script('slick-dataview', 
     $base.'/assets/SlickGrid/slick.dataview.js',
@@ -124,9 +127,12 @@ function dbte_scripts($hook){
           'slick-grid-cellrangeselector', 'slick-grid-cellselectionmodel',
           'slick-grid-formatters', 'slick-grid-editors', 'slick-dataview'));
 
+  wp_enqueue_script('moment-js', 
+    $base.'/assets/moment.js', 
+                    array());
   wp_enqueue_script('db-table-editor-js', 
     $base.'/assets/db-table-editor.js', 
-    array('slick-grid-js', 'json2'));
+                    array('slick-grid-js', 'json2', 'moment-js'));
 
   do_action('db-table-editor_enqueue_scripts');
   if($cur->jsFile) wp_enqueue_script($cur->jsFile);
