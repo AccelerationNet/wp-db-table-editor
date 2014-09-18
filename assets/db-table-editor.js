@@ -1,47 +1,15 @@
 if(typeof(console)=='undefined')console={log:function(){}};
 if(typeof(DBTableEditor)=='undefined') DBTableEditor={};
 
-if ( !Date.prototype.toISOString ) {
-  ( function() {
-    function pad(number) {
-      if ( number < 10 ) {
-        return '0' + number;
-      }
-      return number;
-    }
-    Date.prototype.toISOString = function() {
-      return moment(this).toISOString();
-    };
-  }() );
-}
-DBTableEditor.defaultOffset = new Date().getTimezoneOffset();
-DBTableEditor.parseDate = function(ds, dontRec){
-  if(!ds) return null;
-  var m = moment(ds);
-  if(!m.isValid) return null;
-  return moment(ds).toDate();
-};
-
-DBTableEditor.toISO8601 = function(ds){
-  var d = DBTableEditor.parseDate(ds);
-  if(d) return d.toISOString();
-  return null;
-};
-
 
 // based on https://github.com/brondavies/SlickGrid/commit/d5966858cd4f7591ba3da5789009b488ad05b021#diff-7f1ab5db3c0316e19a9ee635a1e2f2d0R1374
 DBTableEditor.defaultValueFormatter = function (row, cell, value, columnDef, dataContext) {
-  var dv = DBTableEditor.parseDate(value);
+  var dv = DBTableEditor.toLocaleDate(value);
   //console.log(row, cell, value, columnDef, dv);
-  if (value == null) {
-    return "";
-  } else if (value.toLocaleDateString ) {
-    return value.toLocaleDateString();
-  } else if (dv && dv.toLocaleDateString ) {
-    return dv.toLocaleDateString();
-  } else {
-    return (value + "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  }
+  if (value == null)return "";
+  else if ( dv ) return dv;
+  else if (value.toLocaleDateString ) return value.toLocaleDateString();
+  else return (value + "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 };
 
 DBTableEditor.parseQuery = function(query) {
@@ -102,9 +70,8 @@ DBTableEditor.save = function(){
     var column = DBTableEditor.data.columns[r.cell];
     // console.log(column, r.cell);
     if(column && column.isDate){
-      var dv = DBTableEditor.parseDate(r.item[r.cell-1]);
-      if(dv) r.item[r.cell-1] = dv.toISOString();
-      console.log(r.item, dv, r.cell, column, r.item[r.cell-1]);
+      r.item[r.cell-1] = DBTableEditor.toISO8601(r.item[r.cell-1], true);
+      console.log('Saving date',  r.item, r.cell, column, r.item[r.cell-1]);
     }
 
     // cells have a delete idx to be removed
@@ -313,10 +280,13 @@ DBTableEditor.onload = function(opts){
   for( var i=0, c ; c=columns[i] ; i++){
     c.id=c.name.toLowerCase();
     if(c.isDate === null) c.isDate = false;
-    if(c.id.indexOf("date")>=0) c.isDate = true;
+    if(DBTableEditor.auto_date
+      && (c.type=="timestamp"
+          || c.type=="datetime"
+          || c.type=="date")) c.isDate = true;
     if(c.isDate){
       if(!c.formatter) c.formatter = DBTableEditor.defaultValueFormatter;
-      if(!c.editor) c.editor = Slick.Editors.Date;
+      if(!c.editor) c.editor = DBTableEditor.DateEditor;
     }
 
 
@@ -438,7 +408,10 @@ DBTableEditor.onload = function(opts){
   });
 
   grid.onCellChange.subscribe(function(e, args){
-    var item = args.item;
+    var item = args.item, column = grid.getColumns()[args.cell];
+    if(column.isDate){
+      item[args.cell-1] = DBTableEditor.toISO8601(item[args.cell-1], true);
+    }
     //console.log('edit', e, args, item);
     DBTableEditor.addPendingSave(args);
     DBTableEditor.mostRecentEdit = new Date();

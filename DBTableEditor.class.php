@@ -65,13 +65,14 @@ class DBTableEditor {
   var $table, $title, $sql, $dataFn, $id, $data, $cap, $jsFile, 
     $noedit, $editcap, $noedit_columns, $hide_columns, $default_values,
     $columnFilters, $columnNameMap, $insert_cb, $update_cb, $delete_cb,
-    $id_column;
+    $id_column, $auto_date;
   function DBTableEditor($args=null){
     $args = wp_parse_args($args, array('cap'=>'edit_others_posts'));
     foreach($args as $k => $v) $this->{$k} = $v;
     if(!$this->id) $this->id = $this->table;
     if(!$this->title) $this->title = $this->table;
     if(!$this->id_column) $this->id_column = 'id';
+    if(!isset($args['auto_date'])) $this->auto_date=true;
   }
   /*
    * Gets data from the data source (either sql, or dataFn (prefering sql)

@@ -130,9 +130,12 @@ function dbte_scripts($hook){
   wp_enqueue_script('moment-js', 
     $base.'/assets/moment.js', 
                     array());
+  wp_enqueue_script('dbte-date-editor-js', 
+    $base.'/assets/dbte-date-editor.js', 
+                    array('slick-grid-js', 'moment-js', 'jquery', 'jquery-ui-datepicker'));
   wp_enqueue_script('db-table-editor-js', 
     $base.'/assets/db-table-editor.js', 
-                    array('slick-grid-js', 'json2', 'moment-js'));
+                    array('slick-grid-js', 'jquery', 'json2', 'moment-js', 'dbte-date-editor-js'));
 
   do_action('db-table-editor_enqueue_scripts');
   if($cur->jsFile) wp_enqueue_script($cur->jsFile);
@@ -199,17 +202,12 @@ function dbte_render($id=null){
 EOT;
   }
   $args = Array(
-    "table"=>$cur->id,
     "baseUrl"=>$base,
-    "noedit"=> $noedit,
     "data"=>dbte_get_data_table(),
-    "columnFilters"=> $cur->columnFilters,
-    "columnNameMap" => $cur->columnNameMap,
-    "hide_columns"=>$cur->hide_columns,
-    "noedit_columns"=>$cur->noedit_columns,
-    "default_values"=>$cur->default_values,
-    "id_column"=>$cur->id_column,
   );
+  // copy all DBTE slots to the json array
+  foreach($cur as $k => $v) { $args[$k] = $v; }
+  unset($args['sql']);
   $json = json_encode($args);
   $o = <<<EOT
   <div class="dbte-page">
@@ -334,7 +332,9 @@ function dbte_save_cb() {
     $up = array();
     for($i=0 ; $i < $len ; $i++) {
       if($i != $idIdx){
-        $up[$cols[$i]] = @$r[$i];
+        $v = @$r[$i];
+        // dont pass empty strings
+        if ($v) $up[$cols[$i]] = $v;
       }
     }
     if($id != null){

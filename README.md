@@ -87,6 +87,8 @@ This supports `wp_parse_args` style arguments.
  * `insert_cb`,`update_cb`, `delete_cb`: function names to be called with
    the dbte, update array, column array and modified indexes array
    `call_user_func($cur->insert_cb,$cur, $up, $cols, $idxs);`
+ * `auto_date`: should columns that appear to be datetimes, be treated as such
+   This is based on the columns data type
 
 Example:
 ```

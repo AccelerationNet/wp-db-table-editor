@@ -18,5 +18,5 @@
 .db-table-editor {font-size:12px;}
 
 .ui-datepicker-trigger {
-   background:url(images/calendar.png) !important;
+   background:url(images/calendar.png); height:20px; width:20px; padding:2px;
 }
