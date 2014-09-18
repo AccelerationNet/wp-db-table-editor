@@ -11,6 +11,8 @@ DBTableEditor.parseMoment = function(ds){
   return m;
 };
 DBTableEditor.parseDate = function(ds){
+  if(!ds || (ds.length && ds.length==0)) return null;
+  if(ds && ds.getTime) return ds;
   var d = DBTableEditor.parseMoment(ds);
   return d && d.toDate();
 };
