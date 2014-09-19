@@ -256,6 +256,29 @@ DBTableEditor.addPendingSave = function(args){
   jQuery('.pending-save-count').text(DBTableEditor.modifiedRows.length);
 };
 
+// These three function were culled from various stack traces
+// as ways to disable cell nav while using an auto completing editor
+// While not called in here, custom editors might wish to
+// disable/enableGridCellNavigation
+DBTableEditor.disableCellNavHandler = function (e, args) {
+  if (!e.shiftKey && !e.altKey && !e.ctrlKey) {
+    if (e.keyCode === jQuery.ui.keyCode.LEFT
+        || e.keyCode === jQuery.ui.keyCode.RIGHT
+        || e.keyCode === jQuery.ui.keyCode.UP
+        || e.keyCode === jQuery.ui.keyCode.DOWN) {
+      e.stopImmediatePropagation();
+    }
+  }
+};
+
+DBTableEditor.disableGridCellNavigation = function() {
+  DBTableEditor.grid.onKeyDown.subscribe(DBTableEditor.disableCellNavHandler);
+};
+
+DBTableEditor.enableGridCellNavigation = function() {
+  DBTableEditor.grid.onKeyDown.unsubscribe(DBTableEditor.disableCellNavHandler);
+};
+
 DBTableEditor.onload = function(opts){
   // TODO: switch to objects so there can be more than one table to edit *sigh*
   //console.log('Loading db table');
