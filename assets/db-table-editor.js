@@ -282,6 +282,8 @@ DBTableEditor.onload = function(opts){
     if(c.isDate === null) c.isDate = false;
     if(DBTableEditor.auto_date
       && (c.type=="timestamp"
+          || c.type==12 // mysql datetime
+          || c.type==7 // mysql timestamp
           || c.type=="datetime"
           || c.type=="date")) c.isDate = true;
     if(c.isDate){
