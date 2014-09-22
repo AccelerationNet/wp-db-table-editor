@@ -2,11 +2,15 @@ if(typeof(console)=='undefined')console={log:function(){}};
 if(typeof(DBTableEditor)=='undefined') DBTableEditor={};
 
 DBTableEditor.defaultOffset = new Date().getTimezoneOffset();
+DBTableEditor.dateFormats = ["MM-DD-YYYY", "YYYY-MM-DD", moment.ISO_8601];
 DBTableEditor.parseMoment = function(ds){
   if(!ds) return null;
+  if(ds.toDate) return ds;
+  if(ds.getTime) return moment(ds);
   var m;
   // try MY locale -- dont know how to get it to parse to the actual locale
-  m = moment(ds, ["MM-DD-YYYY", "YYYY-MM-DD", moment.ISO_8601]);
+  // Locale Dates are very device / browser dependednt
+  m = moment(ds, DBTableEditor.dateFormats);
   if(!m.isValid) return null;
   return m;
 };
