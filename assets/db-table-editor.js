@@ -1,6 +1,13 @@
 if(typeof(console)=='undefined')console={log:function(){}};
 if(typeof(DBTableEditor)=='undefined') DBTableEditor={};
 
+// JS Extension Points
+/*
+ * DBTableEditor.getItemMetadata
+ * DBTableEditor.toLocaleDate
+ * DBTableEditor.dateFormats
+ */
+
 
 // based on https://github.com/brondavies/SlickGrid/commit/d5966858cd4f7591ba3da5789009b488ad05b021#diff-7f1ab5db3c0316e19a9ee635a1e2f2d0R1374
 DBTableEditor.defaultValueFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -384,6 +391,8 @@ DBTableEditor.onload = function(opts){
   DBTableEditor.columnFilters = jQuery.extend(DBTableEditor.columnFilters,DBTableEditor.query,DBTableEditor.hashQuery);
   delete(DBTableEditor.columnFilters["page"]);
   var dataView = DBTableEditor.dataView = new Slick.Data.DataView({ inlineFilters: true });
+  if(DBTableEditor.getItemMetadata)
+    DBTableEditor.dataView.getItemMetadata = DBTableEditor.getItemMetadata(DBTableEditor.dataView.getItemMetadata);
   var grid = DBTableEditor.grid = new Slick.Grid('.db-table-editor', dataView, columns, options);
   grid.setSelectionModel(new Slick.CellSelectionModel());
   var nextCell = function (args){
