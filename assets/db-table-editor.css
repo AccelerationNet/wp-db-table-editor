@@ -1,5 +1,4 @@
-.db-table-editor { border:1px solid black; min-height: 500px; margin:25px; 
-   overflow:auto;}
+.db-table-editor { border:1px solid black; min-height: 500px; margin:25px; }
 .db-table-editor .delete { padding:0px; margin:0 3px; line-height:20px; height:20px;}
 
 .db-table-editor .slick-row.active > *,
@@ -20,3 +19,4 @@
 .ui-datepicker-trigger {
    background:url(images/calendar.png); height:20px; width:20px; padding:2px;
 }
+

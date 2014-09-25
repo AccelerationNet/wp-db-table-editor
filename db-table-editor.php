@@ -386,6 +386,13 @@ function dbte_delete_cb(){
 }
 add_action( 'wp_ajax_dbte_delete', 'dbte_delete_cb' );
 
+
+function dbte_is_date($ds){
+  $d = date_parse($ds);
+  if($d && !@$d['errors']) return $d;
+  return null;
+}
+
 /*
  * Written as an ajax handler because that was easy, but we usually just link to here
  * will export filtered results using any filter-{columnname} request parameters provided
@@ -402,17 +409,18 @@ function dbte_export_csv(){
   foreach($_REQUEST as $k=>$v){
     if(strpos($k, "filter-")===0){
       $k = str_replace('filter-','', $k);
-      $wheres[] = $wpdb->prepare("$k LIKE %s", '%'.$v.'%');
+      if(dbte_is_date($v)) $wheres[] = $wpdb->prepare("$k = %s", $v);
+      else $wheres[] = $wpdb->prepare("$k LIKE %s", '%'.$v.'%');
       $filtered = true;
     }
   }
   $title = $cur->title;
   if($filtered) $title .= '-filtered';
-  header('Content-Type: application/excel');
-  header('Content-Disposition: attachment; filename="'.$title.'.csv"');
   $data = $cur->getData(array("where"=>$wheres));
   $columns = $data->columnNames;
   $rows = $data->rows;
+  header('Content-Type: application/excel');
+  header('Content-Disposition: attachment; filename="'.$title.'.csv"');
   $fp = fopen('php://output', 'w');
   fputcsv($fp, $columns, ',', '"');
   foreach ( $rows as $row ){

@@ -214,14 +214,20 @@ DBTableEditor.rowButtonFormatter = function(row, cell, value, columnDef, dataCon
 };
 
 DBTableEditor.exportCSV = function(){
-  var url = jQuery(DBTableEditor.grid.getHeaderRow())
-   .find(':input').filter(function(){return jQuery(this).val().length>0;})
-   .serialize();
   var args=jQuery.extend({}, DBTableEditor.query, DBTableEditor.hashQuery);
+  var cols = DBTableEditor.data.columns;
+  jQuery(DBTableEditor.grid.getHeaderRow())
+   .find(':input').each(function(i, el){
+     var $el = jQuery(el),name = $el.attr('name'), val = $el.val(), c = cols[i+1];
+     if(val.length>0){
+       if(c.isDate) args[name]=DBTableEditor.toISO8601(val);
+       else args[name]=val;
+     }
+   });
+
   delete(args["page"]);
   var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table
-   +'&'+jQuery.param(args)
-   +'&'+url;
+   +'&'+jQuery.param(args);
   console.log('Redirecting to export:', url);
   window.location=url;
 };
@@ -385,7 +391,8 @@ DBTableEditor.onload = function(opts){
     showHeaderRow: true,
     headerRowHeight: 30,
     defaultColumnWidth:120,
-    explicitInitialization: true
+    explicitInitialization: true,
+    autoHeight:true
   };
 
   DBTableEditor.columnFilters = jQuery.extend(DBTableEditor.columnFilters,DBTableEditor.query,DBTableEditor.hashQuery);
@@ -394,7 +401,7 @@ DBTableEditor.onload = function(opts){
   if(DBTableEditor.getItemMetadata)
     DBTableEditor.dataView.getItemMetadata = DBTableEditor.getItemMetadata(DBTableEditor.dataView.getItemMetadata);
   var grid = DBTableEditor.grid = new Slick.Grid('.db-table-editor', dataView, columns, options);
-  grid.setSelectionModel(new Slick.CellSelectionModel());
+  //grid.setSelectionModel(new Slick.CellSelectionModel());
   var nextCell = function (args){
     if(!args) return;
     var ri = args.row === null ? rows.length-1 : args.row,

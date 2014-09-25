@@ -24,6 +24,21 @@ function add_db_table_editor($args=null){
    * Can be initialized by passing sql, where, or rows & columns
    * as arguments associative array
    */
+
+function insert_where($sql, $where){
+  $whereIdx = strrpos(strtolower($sql) ,'where');
+  $orderIdx = strrpos(strtolower($sql) ,'order');
+  //echo "$whereIdx - $orderIdx <br />";
+  if(!($whereIdx === FALSE)) $where = "  (" . $where.') AND ';
+  else $where = " WHERE (".$where.') ';
+
+  if($orderIdx<0 && $whereIdx<0)  $sql .= $where;
+  else if(!($whereIdx===FALSE)) $sql = substr_replace($sql, $where, $whereIdx+5, 0);
+  else if(!($orderIdx===FALSE)) $sql = substr_replace($sql, $where, $orderIdx, 0);
+
+  return $sql;
+}
+
 class DBTE_DataTable {
   var $rows,$columns, $columnNames;
   function DBTE_DataTable($args=null){
@@ -34,9 +49,7 @@ class DBTE_DataTable {
     if($sql){ 
       if($where){
         if(is_array($where)) $where = implode(' AND ', $where);
-        if(strrpos(strtolower($sql) ,'where') > 0) $sql .= " AND ";
-        else $sql .= " WHERE ";
-        $sql .= ' ('.$where.') ';
+        $sql = insert_where ($sql, $where);
       }
       $this->rows = $wpdb->get_results($sql, ARRAY_N);
     }else if(@$args['rows']){
