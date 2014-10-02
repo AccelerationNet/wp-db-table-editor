@@ -316,6 +316,8 @@ function dbte_save_cb() {
   $idxs = @$d["modifiedIdxs"];
   $len = count($cols);
   $id_col = $cur->id_column;
+  $no_edit_cols = $cur->noedit_columns;
+  if(is_string($no_edit_cols)) $no_edit_cols=explode(',',$no_edit_cols);
 
   $idIdx = 0; 
   $i=0;
@@ -336,6 +338,9 @@ function dbte_save_cb() {
         // dont pass empty strings
         if ($v) $up[$cols[$i]] = $v;
       }
+    }
+    foreach($no_edit_cols as $noedit){
+      unset($up[$noedit]);
     }
     if($id != null){
       if($cur->update_cb){

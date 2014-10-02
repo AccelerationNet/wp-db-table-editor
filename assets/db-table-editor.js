@@ -299,6 +299,7 @@ DBTableEditor.onload = function(opts){
   DBTableEditor.hashQuery = DBTableEditor.parseQuery(window.location.hash.substring(1));
 
   jQuery.extend(DBTableEditor, opts);
+  DBTableEditor.options = opts;
   if(!DBTableEditor.id_column) DBTableEditor.id_column='id';
   DBTableEditor.id_column = DBTableEditor.id_column.toLowerCase();
   if(!DBTableEditor.data){ return console.log("No Data for DBTableEditor");}
@@ -392,7 +393,7 @@ DBTableEditor.onload = function(opts){
     headerRowHeight: 30,
     defaultColumnWidth:120,
     explicitInitialization: true,
-    autoHeight:true
+    autoHeight:DBTableEditor.autoHeight
   };
 
   DBTableEditor.columnFilters = jQuery.extend(DBTableEditor.columnFilters,DBTableEditor.query,DBTableEditor.hashQuery);

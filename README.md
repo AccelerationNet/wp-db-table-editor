@@ -89,6 +89,9 @@ This supports `wp_parse_args` style arguments.
    `call_user_func($cur->insert_cb,$cur, $up, $cols, $idxs);`
  * `auto_date`: should columns that appear to be datetimes, be treated as such
    This is based on the columns data type
+ * `autoHeight`: passes the autoHeight option to slickgrid (makes
+   there not be a vertical scrollbar on the grid and instead in the
+   window)
 
 Example:
 ```
