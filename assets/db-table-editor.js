@@ -131,30 +131,29 @@ DBTableEditor.filterRow = function (item) {
       var c = grid.getColumns()[cidx];
       if(!c) continue;
       var filterVal = columnFilters[columnId];
-      if(filterVal && filterVal.length > 0){
-        // if we have a formatted value, lets check our value both formatted
-        // and unformatted against the search term both formatted and unformatted
-        // primarily to standardize dates currently
-        if( c.formatter ){
-          var re = new RegExp(filterVal,'i');
-          var val = item[c.field] && item[c.field].toString();
-          if( !val ) continue;
-          // row, cell, value, columnDef, dataContext
-          var formatted = c.formatter(item, cidx, val, c, null);
-          var formattedFilter = c.formatter(item, cidx, filterVal, c, null);
-          var reformattedFilter = new RegExp(formattedFilter,'i');
-          if ((val.search(re) < 0)
-              && (val.search(reformattedFilter) < 0)
-              && (formatted.search(re) < 0)
-              && (formatted.search(reformattedFilter) < 0)) {
-            return false;
-          }
+      var val = item[c.field] && item[c.field].toString();
+      if(!(filterVal && filterVal.length > 0) ) continue;
+      if( !val ) return false;
+      if( !c.formatter ){
+        var re = new RegExp(filterVal,'i');
+        if (val.search(re) < 0) {
+          return false;
         }
-        else{
-          var re = new RegExp(filterVal,'i');
-          if (item[c.field].toString().search(re) < 0) {
-            return false;
-          }
+      }
+      // if we have a formatted value, lets check our value both formatted
+      // and unformatted against the search term both formatted and unformatted
+      // primarily to standardize dates currently
+      else if( c.formatter ){
+        var re = new RegExp(filterVal,'i');
+        // row, cell, value, columnDef, dataContext
+        var formatted = c.formatter(item, cidx, val, c, null);
+        var formattedFilter = c.formatter(item, cidx, filterVal, c, null);
+        var reformattedFilter = new RegExp(formattedFilter,'i');
+        if ((val.search(re) < 0)
+            && (val.search(reformattedFilter) < 0)
+            && (formatted.search(re) < 0)
+            && (formatted.search(reformattedFilter) < 0)) {
+          return false;
         }
       }
     }
