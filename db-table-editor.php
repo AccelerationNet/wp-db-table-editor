@@ -398,6 +398,33 @@ function dbte_is_date($ds){
   return null;
 }
 
+// Here is an adaption of the above code that adds support for double
+// quotes inside a field. (One double quote is replaced with a pair of
+// double quotes per the CSV format). - http://php.net/manual/en/function.fputcsv.php
+function x8_fputcsv($filePointer,$dataArray,$delimiter,$enclosure){
+  // Write a line to a file
+  // $filePointer = the file resource to write to
+  // $dataArray = the data to write out
+  // $delimeter = the field separator
+  
+  // Build the string
+  $string = "";
+  
+  // No leading delimiter
+  $writeDelimiter = FALSE;
+  foreach($dataArray as $dataElement) {
+    // Replaces a double quote with two double quotes
+    $dataElement=str_replace($enclosure, $enclosure.$enclosure , $dataElement);
+    if($writeDelimiter) $string .= $delimiter;
+    $string .= $enclosure . $dataElement . $enclosure;
+    $writeDelimiter = TRUE;
+  }
+  
+  $string .= "\r\n";
+  // Write the string to the file
+  fwrite($filePointer,$string);
+}
+
 /*
  * Written as an ajax handler because that was easy, but we usually just link to here
  * will export filtered results using any filter-{columnname} request parameters provided
@@ -414,7 +441,7 @@ function dbte_export_csv(){
   foreach($_REQUEST as $k=>$v){
     if(strpos($k, "filter-")===0){
       $k = str_replace('filter-','', $k);
-      if(dbte_is_date($v)) $wheres[] = $wpdb->prepare("$k = %s", $v);
+      if($cur->auto_date && dbte_is_date($v)) $wheres[] = $wpdb->prepare("$k = %s", $v);
       else $wheres[] = $wpdb->prepare("$k LIKE %s", '%'.$v.'%');
       $filtered = true;
     }
@@ -427,9 +454,9 @@ function dbte_export_csv(){
   header('Content-Type: application/excel');
   header('Content-Disposition: attachment; filename="'.$title.'.csv"');
   $fp = fopen('php://output', 'w');
-  fputcsv($fp, $columns, ',', '"');
+  x8_fputcsv($fp, $columns, ',', '"');
   foreach ( $rows as $row ){
-    fputcsv($fp, $row, ',', '"');
+    x8_fputcsv($fp, $row, ',', '"');
   }
   fclose($fp);
   die();
