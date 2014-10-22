@@ -333,8 +333,8 @@ function dbte_save_cb() {
     $id=@$r[$idIdx];
     $up = array();
     for($i=0 ; $i < $len ; $i++) {
-      if($i != $idIdx){
-        $v = @$r[$i];
+      if($i != $idIdx && array_key_exists($i, $r)){
+        $v = $r[$i];
         $up[$cols[$i]] = $v;
       }
     }
