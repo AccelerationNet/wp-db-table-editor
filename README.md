@@ -116,6 +116,16 @@ in situations where we may not have the data for a table editor in all
 circumstances (EG: not every page has a member id, so only do it on
 that particular page).
 
+## Custom Buttons
+
+Buttons can be created by pushing functions into
+`DBTableEditor.extraButtons`.  Each of these is a slick grid
+rowButtonFormatter and should return a string of html.
+
+eg:
+   out += fn(row, cell, value, columnDef, dataContext);
+
+
 
 # Hooks / Actions #
 

@@ -441,7 +441,7 @@ function dbte_export_csv(){
     if(strpos($k, "filter-")===0){
       $k = str_replace('filter-','', $k);
       if($cur->auto_date && dbte_is_date($v)) $wheres[] = $wpdb->prepare("$k = %s", $v);
-      else $wheres[] = $wpdb->prepare("$k LIKE %s", '%'.$v.'%');
+      else $wheres[] = $wpdb->prepare("$tbl.$k LIKE %s", '%'.$v.'%');
       $filtered = true;
     }
   }
