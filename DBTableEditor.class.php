@@ -32,10 +32,9 @@ function insert_where($sql, $where){
   if(!($whereIdx === FALSE)) $where = "  (" . $where.') AND ';
   else $where = " WHERE (".$where.') ';
 
-  if($orderIdx<0 && $whereIdx<0)  $sql .= $where;
+  if($orderIdx<0 && $whereIdx<0 || ($orderIdx===FALSE && $whereIdx===FALSE))  $sql .= $where;
   else if(!($whereIdx===FALSE)) $sql = substr_replace($sql, $where, $whereIdx+5, 0);
   else if(!($orderIdx===FALSE)) $sql = substr_replace($sql, $where, $orderIdx, 0);
-
   return $sql;
 }
 
