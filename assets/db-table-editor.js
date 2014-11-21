@@ -225,7 +225,7 @@ DBTableEditor.exportCSV = function(){
    });
 
   delete(args["page"]);
-  var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.table
+  var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.id
    +'&'+jQuery.param(args);
   console.log('Redirecting to export:', url);
   window.location=url;

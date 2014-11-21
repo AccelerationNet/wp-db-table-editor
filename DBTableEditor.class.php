@@ -91,6 +91,7 @@ class DBTableEditor {
    * default is to SELECT * FROM {table}
    */
   function getData($args=null){
+    if(!$args)$args=Array();
     $fn = $this->dataFn;
     $sql = $this->sql;
 
