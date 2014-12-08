@@ -94,6 +94,7 @@ This supports `wp_parse_args` style arguments.
    window)
 
 Example:
+
 ```
 if(function_exists('add_db_table_editor')){
   add_db_table_editor('title=Employees&table=employees');
@@ -116,6 +117,17 @@ in situations where we may not have the data for a table editor in all
 circumstances (EG: not every page has a member id, so only do it on
 that particular page).
 
+## Adding an Interface from a plugin ##
+
+If you need to add an interface from a plugin, you should use the
+`admin_menu` action with a lower than default priority.
+
+eg: `add_action( 'admin_menu', 'my_load_tables', -10 );`
+
+Inside of the `my_load_tables` function you would include all the
+calls to add_db_table_editor
+
+
 ## Custom Buttons
 
 Buttons can be created by pushing functions into
@@ -132,6 +144,7 @@ eg:
  * `db-table-editor_enqueue_scripts` is an action that will be called
    after enqueueing all plugin scripts and before enqueueing `jsFile`
    (if it exists)
+
 ```
 function dbTableEditorScripts(){
   wp_register_script('employee-table-extensions-js',

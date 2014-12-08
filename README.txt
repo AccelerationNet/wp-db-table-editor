@@ -11,9 +11,9 @@ URL: https://github.com/AccelerationNet/wp-db-table-editor/
 
 == Description ==
 
-This is a Wordpress plugin that allows direct spreadsheet (excel-like)
-editing of tables in your Wordpress database.  It's goals are to
-provide useful, simple, flexible database table admin screens.
+This is a Wordpress plugin that allows direct excel-like editing of
+tables in your Wordpress database.  It's goals are to provide useful,
+simple, flexible database table admin screens.
 
 It supports:
 
@@ -27,6 +27,7 @@ It supports:
    (defaults to: edit_others_posts)
   * editing defaults to the same permission as viewing if not specified
  * CSV exports of filtered grid
+ * Custom primary key names (but must be a single value / column)
 
 = Reasons and Expectations =
 
@@ -86,8 +87,14 @@ This supports `wp_parse_args` style arguments.
  * `insert_cb`,`update_cb`, `delete_cb`: function names to be called with
    the dbte, update array, column array and modified indexes array
    `call_user_func($cur->insert_cb,$cur, $up, $cols, $idxs);`
+ * `auto_date`: should columns that appear to be datetimes, be treated as such
+   This is based on the columns data type
+ * `autoHeight`: passes the autoHeight option to slickgrid (makes
+   there not be a vertical scrollbar on the grid and instead in the
+   window)
 
 Example:
+
 ```
 if(function_exists('add_db_table_editor')){
   add_db_table_editor('title=Employees&table=employees');
@@ -100,6 +107,37 @@ if(function_exists('add_db_table_editor')){
 
 }
 ```
+
+== Adding an Interface on the fly ==
+
+If we go to look up a database table editor and we dont find it, but
+there is a function named dbte_create_$tbl that matches, we will call
+that function expecting it to return a dbte instance. This is useful
+in situations where we may not have the data for a table editor in all
+circumstances (EG: not every page has a member id, so only do it on
+that particular page).
+
+== Adding an Interface from a plugin ==
+
+If you need to add an interface from a plugin, you should use the
+`admin_menu` action with a lower than default priority.
+
+eg: `add_action( 'admin_menu', 'my_load_tables', -10 );`
+
+Inside of the `my_load_tables` function you would include all the
+calls to add_db_table_editor
+
+
+== Custom Buttons ==
+
+Buttons can be created by pushing functions into
+`DBTableEditor.extraButtons`.  Each of these is a slick grid
+rowButtonFormatter and should return a string of html.
+
+eg:
+   out += fn(row, cell, value, columnDef, dataContext);
+
+
 
 = Hooks / Actions =
 
@@ -116,7 +154,7 @@ function dbTableEditorScripts(){
   add_action('db-table-editor_enqueue_scripts', 'dbTableEditorScripts');
 ```
 
-== Shortcodes ==
+= Shortcodes =
 
 You can use a shortcode to include a dbte interface on a wordpress
 page.  Please use with care.
@@ -127,11 +165,10 @@ page.  Please use with care.
 == Caveats ==
 
  * Dont put an editable table editor on your public facing screens using the shortcode!
- * Database tables are expected to have a column names `id` that is
-   the primary key
 
 == Troubleshooting ==
 
  * My delete button is missing / I Can't Edit
   * You either dont have `editcap` or `id_column` is misconfigured
   * https://github.com/AccelerationNet/wp-db-table-editor/issues/5
+
