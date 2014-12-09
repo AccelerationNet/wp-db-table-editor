@@ -356,7 +356,9 @@ function dbte_save_cb() {
       }
       else{
         $wpdb->insert($cur->table, $up);
-        $new_ids[] = Array('rowId'=>$r["id"], 'dbid'=>$wpdb->insert_id);
+        $ids= Array('rowId'=>@$r["id"], 'dbid'=>$wpdb->insert_id);
+        if(!@$ids['rowId']) $ids['rowId'] = @$r["rowId"];
+        $new_ids[] = $ids;
       }
     }
     $ridx++;

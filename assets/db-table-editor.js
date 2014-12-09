@@ -11,6 +11,7 @@ if(typeof(DBTableEditor)=='undefined') DBTableEditor={};
 
 // based on https://github.com/brondavies/SlickGrid/commit/d5966858cd4f7591ba3da5789009b488ad05b021#diff-7f1ab5db3c0316e19a9ee635a1e2f2d0R1374
 DBTableEditor.defaultValueFormatter = function (row, cell, value, columnDef, dataContext) {
+  if(value == "0000-00-00 00:00:00") return null;
   var dv = DBTableEditor.toLocaleDate(value);
   //console.log(row, cell, value, columnDef, dv);
   if (value == null)return "";
