@@ -99,7 +99,7 @@ DBTableEditor.save = function(){
     rows:toSave
   });
 
-  jQuery.post(ajaxurl, {action:'dbte_save', data:toSend, table:DBTableEditor.table})
+  jQuery.post(ajaxurl, {action:'dbte_save', data:toSend, table:DBTableEditor.id})
     .success(DBTableEditor.saveCB)
     .error(DBTableEditor.saveFailCB);
 
@@ -188,7 +188,7 @@ DBTableEditor.deleteHandler = function(el){
   for(var i=0,c=null,v=null;c=DBTableEditor.data.columns[i+1];i++)
     rObj[c.originalName]=row[i];
 
-  var reqArgs = jQuery.extend({action:'dbte_delete', dataid:id, rowid:rowid, table:DBTableEditor.table}, rObj);
+  var reqArgs = jQuery.extend({action:'dbte_delete', dataid:id, rowid:rowid, table:DBTableEditor.id}, rObj);
   //console.log(rObj, reqArgs);
   jQuery.post(ajaxurl, reqArgs)
    .success(function(data){DBTableEditor.deleteSuccess(data, id, rowid);})
