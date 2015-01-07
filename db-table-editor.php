@@ -164,12 +164,12 @@ function dbte_shortcode($args){
   $id = @$args["id"];
   $o="";
   if(!is_admin()){
-    $url = <?php echo admin_url('admin-ajax.php'); ?>;
+    $url = admin_url('admin-ajax.php');
     $o.='<script type="text/javascript">var ajaxurl = "'.$url.'";</script>';
   }
   if($id){
     dbte_scripts($id);
-    $o = dbte_render($id);
+    $o .= dbte_render($id);
   }
   return $o;
 }
