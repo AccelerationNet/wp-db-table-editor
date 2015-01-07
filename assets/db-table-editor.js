@@ -89,7 +89,7 @@ DBTableEditor.save = function(){
     }
     r.item.modifiedIdxs = [r.cell-1];
     h[r.item.id] = r.item;
-    toSave.push(r.item);
+    toSave.push(jQuery.extend({}, r.item));
   }
   //console.log(toSave);
   var cols = DBTableEditor.data.columns.map(function(c){return c.originalName;});
@@ -466,7 +466,7 @@ DBTableEditor.onload = function(opts){
       var v = r[n];
       if(c.type == 'int') return Number(v);
       else if(c.id.search('date')>=0) return new Date(v);
-      return v && v.toLowerCase();
+      return v && v.toString().toLowerCase();
     };
     var rowSorter = function (r1, r2) {
       for (var c, i=0; c=cols[i]; i++) {
