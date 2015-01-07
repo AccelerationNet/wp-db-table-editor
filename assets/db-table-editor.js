@@ -89,6 +89,8 @@ DBTableEditor.save = function(){
     }
     r.item.modifiedIdxs = [r.cell-1];
     h[r.item.id] = r.item;
+    // the extend ensures we send object json which includes ".id"
+    // instead of array json which elides it
     toSave.push(jQuery.extend({}, r.item));
   }
   //console.log(toSave);
