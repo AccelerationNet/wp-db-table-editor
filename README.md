@@ -162,13 +162,34 @@ page.  Please use with care.
 [dbte id=table-editor-id] - (id defaults to table)
 
 
-== Caveats ==
+## Caveats ##
 
  * Dont put an editable table editor on your public facing screens using the shortcode!
 
-== Troubleshooting ==
+## Troubleshooting ##
 
  * My delete button is missing / I Can't Edit
   * You either dont have `editcap` or `id_column` is misconfigured
   * https://github.com/AccelerationNet/wp-db-table-editor/issues/5
+
+# Advanced Examples
+
+## CF7 DB Submit Plugin integration
+
+See: examples/cf7dbsubmit_integration.php
+
+This is not a fully runnable example, but should give good examples of
+
+ * working cf7dbsubmit plugin
+ * Custom save delete hooks
+ * custom complex sql building with this plugin
+ * sending notifications on edit of specific fields
+
+cf7dbsubmit stores its data in a "hashtable" format of:
+
+   form, submit_time, field_name, field_value
+ 
+but we want to present this in a more excel fasion of each field being
+a column of our spreadsheet and each row being a different submission
+
 
