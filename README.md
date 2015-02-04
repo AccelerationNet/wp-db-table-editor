@@ -154,6 +154,26 @@ function dbTableEditorScripts(){
   add_action('db-table-editor_enqueue_scripts', 'dbTableEditorScripts');
 ```
 
+## dbte_row_deleted, dbte_row_updated, dbte_row_inserted
+
+Called after a row is deleted, updated, or inserted passes
+
+```
+add_action('dbte_row_deleted', 'my_dbte_row_deleted');
+
+my_dbte_row_deleted($currentTable, $idRemoved){
+  // do things
+}
+
+add_action('dbte_row_updated', 'my_dbte_row_upserted');
+add_action('dbte_row_inserted', 'my_dbte_row_upserted');
+
+my_dbte_row_upserted($currentTable, $values, $columns, $indexedModified){
+  // do things
+}
+
+```
+
 # Shortcodes #
 
 You can use a shortcode to include a dbte interface on a wordpress
