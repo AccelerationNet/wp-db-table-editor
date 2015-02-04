@@ -159,16 +159,16 @@ function dbTableEditorScripts(){
 Called after a row is deleted, updated, or inserted passes
 
 ```
-add_action('dbte_row_deleted', 'my_dbte_row_deleted');
+add_action('dbte_row_deleted', 'my_dbte_row_deleted', 10, 2);
 
-my_dbte_row_deleted($currentTable, $idRemoved){
+function my_dbte_row_deleted($currentTable, $idRemoved){
   // do things
 }
 
-add_action('dbte_row_updated', 'my_dbte_row_upserted');
-add_action('dbte_row_inserted', 'my_dbte_row_upserted');
+add_action('dbte_row_updated', 'my_dbte_row_upserted', 10, 4);
+add_action('dbte_row_inserted', 'my_dbte_row_upserted', 10, 4);
 
-my_dbte_row_upserted($currentTable, $values, $columns, $indexedModified){
+function my_dbte_row_upserted($currentTable, $values, $columns, $indexedModified){
   // do things
 }
 
