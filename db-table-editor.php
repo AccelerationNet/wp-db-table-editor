@@ -3,7 +3,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.2.8
+Version: 1.3
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 License: BSD
@@ -347,13 +347,13 @@ function dbte_save_cb() {
     }
     if($id != null){
       if($cur->update_cb){
-        call_user_func($cur->update_cb,$cur, $up, $cols, $idxs[$ridx]);
+        call_user_func($cur->update_cb,$cur, $up, $cols, $idxs[$ridx], $id);
       }
       else{
         $where = array($id_col=>$id);
         $wpdb->update($cur->table, $up , $where);
       }
-      do_action('dbte_row_updated', $cur, $up, $cols, $idxs);
+      do_action('dbte_row_updated', $cur, $up, $cols, $idxs, $id);
     }
     else{
       if($cur->insert_cb){
@@ -386,7 +386,7 @@ function dbte_delete_cb(){
   if($cur->noedit || ($cur->editcap && !current_user_can($cur->editcap))) return;
   $id_col = $cur->id_column;
   if($cur->delete_cb){
-    call_user_func($cur->delete_cb,$cur);
+    call_user_func($cur->delete_cb,$cur,$id);
   }
   else{
     // TODO: ANSI Compliant way to do this?

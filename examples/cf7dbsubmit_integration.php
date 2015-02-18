@@ -112,7 +112,7 @@ function xxx_contacts_insert($dbte, $vals, $columns, $idxs){
 // When inserting a new row, we need to convert it from a row
 // into a more "hashtable" style database schema (that is, one 
 // row in the db for each "column" in our incoming dataset
-function xxx_contacts_update($dbte, $vals, $columns, $idxs){
+function xxx_contacts_update($dbte, $vals, $columns, $idxs, $id){
   global $wpdb;
   $id = $dbte->id;
 
@@ -147,7 +147,7 @@ function xxx_status_change_email($vals, $columns){
 }
 
 // Delete all the database rows for this submission
-function xxx_contacts_delete($dbte){
+function xxx_contacts_delete($dbte, $id){
   global $wpdb;
   $id = $dbte->id;
   $subtime = @$_REQUEST["submit_time"];
