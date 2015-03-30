@@ -152,12 +152,10 @@ DBTableEditor.filterRow = function (item) {
         var formatted = c.formatter(item, cidx, val, c, null);
         var formattedFilter = c.formatter(item, cidx, filterVal, c, null);
         var reformattedFilter = new RegExp(formattedFilter,'i');
-        if ((val.search(re) < 0)
-            && (val.search(reformattedFilter) < 0)
-            && (formatted.search(re) < 0)
-            && (formatted.search(reformattedFilter) < 0)) {
-          return false;
-        }
+        return ((val && val.search(re) >= 0)
+                || (val && val.search(reformattedFilter) >= 0)
+                || (formatted && formatted.search(re) >= 0)
+                || (formatted && formatted.search(reformattedFilter) >= 0));
       }
     }
   }
