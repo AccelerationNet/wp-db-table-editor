@@ -5,6 +5,9 @@
  * @package wp-db-table-editor
  */
 
+use PHPSQL\Parser;
+use PHPSQL\Creator;
+
 /*
  * The primary entrypoint to configuring wp-db-table-editor's
  * creates a DBTableEditor instance and puts it in the global 
@@ -24,17 +27,18 @@ function add_db_table_editor($args=null){
    * Can be initialized by passing sql, where, or rows & columns
    * as arguments associative array
    */
-
 function insert_where($sql, $where){
-  $whereIdx = strrpos(strtolower($sql) ,'where');
-  $orderIdx = strrpos(strtolower($sql) ,'order');
-  //echo "$whereIdx - $orderIdx <br />";
-  if(!($whereIdx === FALSE)) $where = "  (" . $where.') AND ';
-  else $where = " WHERE (".$where.') ';
+  if(is_array($where)) $where = implode(' AND ', $where);
 
-  if($orderIdx<0 && $whereIdx<0 || ($orderIdx===FALSE && $whereIdx===FALSE))  $sql .= $where;
-  else if(!($whereIdx===FALSE)) $sql = substr_replace($sql, $where, $whereIdx+5, 0);
-  else if(!($orderIdx===FALSE)) $sql = substr_replace($sql, $where, $orderIdx, 0);
+  $sqlparser = new Parser();
+  $sqlcreator = new Creator();
+  $parsed = $sqlparser->parse($sql);
+  // a bit of a hack because we are abusing the constant node, but whatever
+  $whereExp = Array("expr_type"=>"const", "base_expr"=>$where, "sub_tree"=>null);
+  if(!@$parsed['WHERE']) $parsed['WHERE'] = Array();
+  else $whereExp['base_expr']=' AND ('.$whereExp['base_expr'].')';
+  $parsed['WHERE'][]=$whereExp;
+  $sql = $sqlcreator->create($parsed);
   return $sql;
 }
 
@@ -47,7 +51,6 @@ class DBTE_DataTable {
     $where = @$args['where'];
     if($sql){ 
       if($where){
-        if(is_array($where)) $where = implode(' AND ', $where);
         $sql = insert_where ($sql, $where);
       }
       $this->rows = $wpdb->get_results($sql, ARRAY_N);

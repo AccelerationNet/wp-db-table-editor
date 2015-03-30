@@ -42,7 +42,12 @@ global $DBTE_INSTANCES, $DBTE_CURRENT;
 $DBTE_INSTANCES = Array();
 $DBTE_CURRENT = null;
 
+include('SplClassLoader.php');
+$loader = new SplClassLoader('PHPSQL', 'php-sql-parser/src/');
+$loader->register();
 include('DBTableEditor.class.php');
+
+
 
 /* TODO: could be used to pull current config from the db if needed
 add_action('plugins_loaded','db_table_editor_init');
@@ -454,6 +459,7 @@ function dbte_export_csv(){
       $filtered = true;
     }
   }
+
   $title = $cur->title;
   if($filtered) $title .= '-filtered';
   $data = $cur->getData(array("where"=>$wheres));

@@ -1,3 +1,6 @@
 [submodule "assets/SlickGrid"]
 	path = assets/SlickGrid
 	url = git@github.com:mleibman/SlickGrid.git
+[submodule "php-sql-parser"]
+	path = php-sql-parser
+	url = git@github.com:AccelerationNet/php-sql-parser.git
