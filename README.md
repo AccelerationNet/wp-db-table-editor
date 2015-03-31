@@ -122,9 +122,9 @@ that particular page).
 ## Adding an Interface from a plugin ##
 
 If you need to add an interface from a plugin, you should use the
-`admin_menu` action with a lower than default priority.
+`db_table_editor_init` action.
 
-eg: `add_action( 'admin_menu', 'my_load_tables', -10 );`
+eg: `add_action( 'db_table_editor_init', 'my_load_tables' );`
 
 Inside of the `my_load_tables` function you would include all the
 calls to add_db_table_editor
@@ -142,6 +142,9 @@ eg:
 
 
 # Hooks / Actions #
+
+ * `db_table_editor_init` is called during init so that other plugins
+   can rely on this
 
  * `db-table-editor_enqueue_scripts` is an action that will be called
    after enqueueing all plugin scripts and before enqueueing `jsFile`

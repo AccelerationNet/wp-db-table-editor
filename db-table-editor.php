@@ -48,12 +48,14 @@ $loader->register();
 include('DBTableEditor.class.php');
 
 
-
-/* TODO: could be used to pull current config from the db if needed
-add_action('plugins_loaded','db_table_editor_init');
+add_action('init','db_table_editor_init');
 function db_table_editor_init(){
+    /* TODO: could be used to pull current config from the db if needed */
+    // this is mostly not needed, but allows a somewhat clearer
+    // place to hook this from a plugin
+    do_action('db_table_editor_init');
 }
-*/
+
 
 /*
  * Gets the DBTE_DataTable of the current DBTE instance
