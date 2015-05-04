@@ -4,7 +4,7 @@ Contributers: bobbysmith007
 Donate link: https://www.acceleration.net/programming/donate-to-acceleration-net/
 Tags: admin screens, database, editor
 Requires at least: 3.0.0
-Tested Up To: 4.2
+Tested Up To: 4.2.1
 Stable tag: trunk
 License: BSD
 URL: https://github.com/AccelerationNet/wp-db-table-editor/
