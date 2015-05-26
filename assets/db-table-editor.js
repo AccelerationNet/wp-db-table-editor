@@ -43,21 +43,31 @@ DBTableEditor.saveFailCB = function(err, resp){
   jQuery('button.save img').attr('src',src.replace('loading.gif','accept.png'));
 
 };
-DBTableEditor.saveCB = function(data){
-  console.log('Save Success');
-  jQuery('button.save').attr("disabled", null);
-  var src = jQuery('button.save img').attr('src');
-  jQuery('button.save img').attr('src',src.replace('loading.gif','accept.png'));
+DBTableEditor.makeSaveCB = function(rows){
+  return function(newIds) {
+    console.log('Save Success', newIds);
+    jQuery('button.save').attr("disabled", null);
+    var src = jQuery('button.save img').attr('src');
+    jQuery('button.save img').attr('src',src.replace('loading.gif','accept.png'));
 
-  var pair;
-  while((pair = data.pop())){
-    if(!pair.rowId) continue;
-    var item = DBTableEditor.dataView.getItemById( pair.rowId );
-    console.log(item, pair.rowId);
-    item[DBTableEditor.columnMap[DBTableEditor.id_column]] = pair.dbid;
-    DBTableEditor.dataView.updateItem(pair.rowId, item);
-  }
-  DBTableEditor.clearPendingSaves();
+    // reset save tracking
+    jQuery.each(rows, function(idx, item) {
+      //item = DBTableEditor.dataView.getItemById( id );
+      item.newRow = false;
+      item.dirty = false;
+      item.modifiedIdxs =[];
+    });
+    // update ids
+    var pair;
+    jQuery.each(newIds, function(pair){
+      if(!pair.rowId) return true;
+      var item = DBTableEditor.dataView.getItemById( pair.rowId );
+      console.log(item, pair.rowId);
+      item[DBTableEditor.columnMap[DBTableEditor.id_column]] = pair.dbid;
+      DBTableEditor.dataView.updateItem(pair.rowId, item);
+    });
+    DBTableEditor.clearPendingSaves();
+  };
 };
 
 DBTableEditor.clearFilters = function(){
@@ -73,7 +83,7 @@ DBTableEditor.save = function(){
   jQuery('button.save img').attr('src',src.replace('accept.png','loading.gif'));
 
   // the last time we modified a row should contain all the final modifications
-  var it,h = {},i,r, toSave=[], mod = DBTableEditor.modifiedRows.slice(0), modified;
+  var it,h = {},i,r, toSave=[], rows=[], mod = DBTableEditor.modifiedRows.slice(0), modified;
   while(( r = mod.pop() )){
     var column = DBTableEditor.data.columns[r.cell];
     // console.log(column, r.cell);
@@ -92,6 +102,7 @@ DBTableEditor.save = function(){
     // the extend ensures we send object json which includes ".id"
     // instead of array json which elides it
     toSave.push(jQuery.extend({}, r.item));
+    rows.push(r.item);
   }
   //console.log(toSave);
   var cols = DBTableEditor.data.columns.map(function(c){return c.originalName;});
@@ -102,8 +113,10 @@ DBTableEditor.save = function(){
     rows:toSave
   });
 
-  jQuery.post(ajaxurl, {action:'dbte_save', data:toSend, table:DBTableEditor.id})
-    .success(DBTableEditor.saveCB)
+  jQuery.post(ajaxurl, {action:'dbte_save',
+                        data:toSend,
+                        table:DBTableEditor.id})
+    .success(DBTableEditor.makeSaveCB(rows))
     .error(DBTableEditor.saveFailCB);
 
 };
@@ -127,7 +140,7 @@ DBTableEditor.filterRow = function (item) {
   var columnFilters = DBTableEditor.columnFilters,
       grid = DBTableEditor.grid;
   // dont filter the new row
-  if(item.newRow) return true;
+  if(item.newRow || item.dirty) return true;
   for (var columnId in columnFilters) {
     if (columnId !== undefined && columnFilters[columnId] !== "") {
       var cidx = grid.getColumnIndex(columnId);
@@ -234,7 +247,7 @@ DBTableEditor.exportCSV = function(){
 
 DBTableEditor.updatePagingInfo = function(){
   var cnt = DBTableEditor.dataView.getPagingInfo()["totalRows"];
-  jQuery('.db-table-editor-row-count').text ("Showing "+cnt+" of "+DBTableEditor.data.rows.length+" rows");
+  jQuery('.db-table-editor-row-count').text ("Showing "+cnt+" of "+DBTableEditor.data.rows.length+" rows - items with unsaved changes are not filtered");
 };
 
 DBTableEditor._ids_ ={};
@@ -455,6 +468,7 @@ DBTableEditor.onload = function(opts){
       item[args.cell-1] = DBTableEditor.toISO8601(item[args.cell-1], true);
     }
     //console.log('edit', e, args, item);
+    item.dirty = true;
     DBTableEditor.addPendingSave(args);
     DBTableEditor.mostRecentEdit = new Date();
     nextCell(args);
