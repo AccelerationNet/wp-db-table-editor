@@ -218,3 +218,6 @@ but we want to present this in a more excel fasion of each field being
 a column of our spreadsheet and each row being a different submission
 
 
+# Contributers and Thanks 
+ * bobbysmith007 / Acceleration.net - Primary developer of plugin
+ * nikomuse - i18n support
