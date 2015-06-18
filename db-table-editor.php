@@ -89,7 +89,7 @@ function dbte_get_data_table(){
  */
 function dbte_scripts($hook){
   global $DBTE_INSTANCES, $DBTE_CURRENT;
-  $tbl = str_replace('db-table-editor_page_dbte_', '', $hook);
+  $tbl = preg_replace('/^.*_page_dbte_/', '', $hook);
   $cur = dbte_current($tbl);
   if(!$cur) return;
   $base = plugins_url('wp-db-table-editor');
