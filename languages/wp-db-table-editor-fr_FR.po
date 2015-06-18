@@ -1,0 +1,95 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: DB-table-editor\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: Thu Jun 18 2015 10:48:46 GMT+0200 (CEST)\n"
+"PO-Revision-Date: Thu Jun 18 2015 16:21:26 GMT+0200 (CEST)\n"
+"Last-Translator: admin_fi <technique@force-interactive.com>\n"
+"Language-Team: \n"
+"Language: French (France)\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ..\n"
+"X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
+"__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
+"_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
+"esc_attr__:1;esc_html__:1;esc_attr_e:1;esc_html_e:1;esc_attr_x:1,2c;"
+"esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
+"X-Generator: Loco - https://localise.biz/\n"
+"X-Loco-Target-Locale: fr_FR"
+
+#: ../db-table-editor.php:75
+msgid "DB-Table-Editor Cannot READ DATA SOURCE"
+msgstr "DB-Table-Editor n'arrive pas à lire la source de données"
+
+#: ../db-table-editor.php:157
+#, php-format
+msgid "Showing %d of %d rows - items with unsaved changes are not filtered"
+msgstr "Affichage de %d ligne(s) sur %d - les lignes modifiées ne sont pas filtrées"
+
+#: ../db-table-editor.php:158
+msgid "Are you sure you wish to remove this row"
+msgstr "Êtes-vous sûr(e) de vouloir supprimer cette ligne ?\n"
+
+#: ../db-table-editor.php:159
+msgid "Delete this Row"
+msgstr "Supprimer cette ligne\n"
+
+#: ../db-table-editor.php:213
+msgid "No Database Table Configured to Edit"
+msgstr "Aucune table de base de données n'a été configurée pour l'édition"
+
+#: ../db-table-editor.php:225
+#, php-format
+msgid "There are %s unsaved changes"
+msgstr "Il y a %s modification(s) non enregistrée(s)"
+
+#: ../db-table-editor.php:226
+#, php-format
+msgid "Save %s Changes"
+msgstr "Enregistrer %s modification(s)\n"
+
+#: ../db-table-editor.php:227
+msgid "New"
+msgstr "Ajouter"
+
+#: ../db-table-editor.php:228
+msgid "Undo"
+msgstr "Défaire\n"
+
+#: ../db-table-editor.php:243
+msgid "Export to CSV"
+msgstr "Export CSV"
+
+#: ../db-table-editor.php:244
+msgid "Clear Filters"
+msgstr "Effacer les filtres"
+
+#: ../db-table-editor.php:245
+msgid "Showing 0 of 0 rows"
+msgstr "Afficher 0 ligne(s) sur 0"
+
+#: ../db-table-editor.php:246
+msgid "You have unsaved data, are you sure you want to quit"
+msgstr ""
+"Il y a des données non enregistrées, êtes-vous sûr(e) de vouloir quitter "
+"cette page ?"
+
+#: ../db-table-editor.php:309
+#, php-format
+msgid ""
+"This plugin allows viewing, editing, and exporting of database tables in "
+"your wordpress database through the admin interface.  See the %sREADME.md%s "
+"for information on configuring this plugin."
+msgstr ""
+"Ce plugin permet de voir, modifier et exporter des données de votre base de "
+"données Wordpress via l'interface d'administration. Voir le fichier %sREADME."
+"md%s pour avoir des informations sur la configuration de ce plugin.\n"
+
+#: ../db-table-editor.php:312
+msgid "Configured Database Tables"
+msgstr "Tableaux de base de données configurés"

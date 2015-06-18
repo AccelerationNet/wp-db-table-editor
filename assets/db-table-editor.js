@@ -196,7 +196,7 @@ DBTableEditor.deleteHandler = function(el){
     return;
   }
   if(!btn.is('button'))btn = btn.parents('button');
-  if (!confirm('Are you sure you wish to remove this row')) return;
+  if (!confirm(translations['confirm_delete_row'])) return;
 
   // we have an empty column first for delete buttons
   for(var i=0,c=null,v=null;c=DBTableEditor.data.columns[i+1];i++)
@@ -216,7 +216,7 @@ DBTableEditor.rowButtonFormatter = function(row, cell, value, columnDef, dataCon
   var rowid = dataContext.id; // uses id, NOT id_column
   if(!id) return null;
   var url = DBTableEditor.baseUrl+'/assets/images/delete.png';
-  var out = '<button title="Delete this Row" class="delete" onclick="DBTableEditor.deleteHandler(this);return false;"'+
+  var out = '<button title="'+translations['delete_button']+'" class="delete" onclick="DBTableEditor.deleteHandler(this);return false;"'+
     ' data-rowid="'+rowid+'" '+
     ' data-id="'+id+'" />'+
     '<img src="'+url+'"/></button>';
@@ -247,7 +247,7 @@ DBTableEditor.exportCSV = function(){
 
 DBTableEditor.updatePagingInfo = function(){
   var cnt = DBTableEditor.dataView.getPagingInfo()["totalRows"];
-  jQuery('.db-table-editor-row-count').text ("Showing "+cnt+" of "+DBTableEditor.data.rows.length+" rows - items with unsaved changes are not filtered");
+  jQuery('.db-table-editor-row-count').text (sprintf(translations['row_count'], cnt, DBTableEditor.data.rows.length));
 };
 
 DBTableEditor._ids_ ={};
