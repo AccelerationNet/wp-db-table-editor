@@ -282,7 +282,9 @@ EOT;
 function dbte_menu(){
   global $DBTE_INSTANCES;
   $ico = plugins_url('wp-db-table-editor/assets/images/database_edit.png');
-  add_menu_page('DB Table Editor', 'DB Table Editor', 'read', 'wp-db-table-editor',
+  add_menu_page(__('DB Table Editor', 'wp-db-table-editor'),
+                __('DB Table Editor', 'wp-db-table-editor'),
+                'read', 'wp-db-table-editor',
                 'dbte_main_page', $ico, 50);
 
   $displayed = 0;
