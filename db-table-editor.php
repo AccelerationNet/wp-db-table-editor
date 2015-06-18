@@ -159,7 +159,7 @@ function dbte_scripts($hook){
     'delete_button' => __( 'Delete this Row', 'wp-db-table-editor' )
   );
   wp_localize_script( 'db-table-editor-js', 'translations', $translation_array );
-  wp_enqueue_script('dbte-date-editor-js');
+  wp_enqueue_script('db-table-editor-js');
 
   do_action('db-table-editor_enqueue_scripts');
   if($cur->jsFile) wp_enqueue_script($cur->jsFile);
