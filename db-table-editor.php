@@ -6,6 +6,9 @@ Description: A plugin that adds "tools" pages to edit database tables
 Version: 1.3.3
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
+Text Domain: wp-db-table-editor
+Domain Path: /languages
+
 License: BSD
 
 Copyright (c) 2014, Russ Tyndall, Acceleration.net
@@ -56,6 +59,11 @@ function db_table_editor_init(){
     do_action('db_table_editor_init');
 }
 
+function wp_db_load_plugin_textdomain() {
+    load_plugin_textdomain( 'wp-db-table-editor', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
+}
+add_action( 'plugins_loaded', 'wp_db_load_plugin_textdomain' );
+
 
 /*
  * Gets the DBTE_DataTable of the current DBTE instance
@@ -65,7 +73,7 @@ function dbte_get_data_table(){
   $cur = dbte_current();
   if(!$cur){ return "null"; }
   $data = $cur->getData(array('type'=>ARRAY_N));
-  if(!is_a($data, "DBTE_DataTable")) echo "DB-Table-Editor Cannot READ DATA SOURCE";
+  if(!is_a($data, "DBTE_DataTable")) echo __('DB-Table-Editor Cannot READ DATA SOURCE', 'wp-db-table-editor');
   $rows = $data->rows;
   $columns = $data->columns;
   return Array('columns'=>$columns, 'rows'=>$rows);
@@ -193,7 +201,7 @@ function echo_dbte_render(){
 function dbte_render($id=null){
   $cur = dbte_current($id);
   if(!$cur){
-    return "No Database Table Configured to Edit";
+    return __('No Database Table Configured to Edit', 'wp-db-table-editor');
   }
   $base = plugins_url('wp-db-table-editor');
   $noedit = $cur->noedit;
@@ -205,11 +213,14 @@ function dbte_render($id=null){
   }
   if( !$noedit ){
     $pendingSaveCnt = '<span class="pending-save-count">0</span>';
-    $pendingSaveHeader = "<div class=\"pending-save-header\">There are $pendingSaveCnt unsaved changes</div>";
+    $pendingSaveHeader = '<div class="pending-save-header">'.sprintf(__('There are %s unsaved changes', 'wp-db-table-editor'), $pendingSaveCnt).'</div>';
+    $saveButtonLabel = sprintf(__('Save %s Changes', 'wp-db-table-editor'), $pendingSaveCnt);
+    $newButtonLabel = __('New', 'wp-db-table-editor');
+    $undoButtonLabel = __('Undo', 'wp-db-table-editor');
     $buttons = <<<EOT
-    <button class="save" onclick="DBTableEditor.save();"><img src="$base/assets/images/accept.png" align="absmiddle">Save $pendingSaveCnt Changes</button>
-    <button onclick="DBTableEditor.gotoNewRow();"><img src="$base/assets/images/add.png" align="absmiddle">New</button>
-    <button onclick="DBTableEditor.undo();"><img src="$base/assets/images/arrow_undo.png" align="absmiddle">Undo</button>
+    <button class="save" onclick="DBTableEditor.save();"><img src="$base/assets/images/accept.png" align="absmiddle">$saveButtonLabel</button>
+    <button onclick="DBTableEditor.gotoNewRow();"><img src="$base/assets/images/add.png" align="absmiddle">$newButtonLabel</button>
+    <button onclick="DBTableEditor.undo();"><img src="$base/assets/images/arrow_undo.png" align="absmiddle">$undoButtonLabel</button>
 EOT;
   }
   $args = Array(
@@ -220,18 +231,22 @@ EOT;
   foreach($cur as $k => $v) { $args[$k] = $v; }
   unset($args['sql']);
   $json = json_encode($args);
+  $exportButtonLabel = __('Export to CSV', 'wp-db-table-editor');
+  $clearFiltersButtonLabel = __('Clear Filters', 'wp-db-table-editor');
+  $rowCountLabel = __('Showing 0 of 0 rows', 'wp-db-table-editor');
+  $confirmationMessage = __('You have unsaved data, are you sure you want to quit', 'wp-db-table-editor');
   $o = <<<EOT
   <div class="dbte-page">
     <h1>$cur->title</h1>
     $pendingSaveHeader
     <div class="db-table-editor-buttons">
-    <button class="export" onclick="DBTableEditor.exportCSV();"><img src="$base/assets/images/download.png" align="absmiddle">Export to CSV</button>
+    <button class="export" onclick="DBTableEditor.exportCSV();"><img src="$base/assets/images/download.png" align="absmiddle">$exportButtonLabel</button>
     <button class="clear" onclick="DBTableEditor.clearFilters();">
       <img src="$base/assets/images/clear.png" align="absmiddle">
-      Clear Filters</button>
+      $clearFiltersButtonLabel</button>
     $buttons
     </div>
-    <div class="db-table-editor-row-count" >Showing 0 of 0 rows</div>
+    <div class="db-table-editor-row-count" >$rowCountLabel</div>
     <div class="db-table-editor"></div>
     <script type="text/javascript">
 jQuery(function(){
@@ -241,7 +256,7 @@ jQuery(function(){
 if(window.addEventListener)
 window.addEventListener("beforeunload", function (e) {
   if(DBTableEditor.modifiedRows.length == 0) return;
-  var confirmationMessage = "You have unsaved data, are you sure you want to quit";
+  var confirmationMessage = "$confirmationMessage";
   (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
   return confirmationMessage;                                //Webkit, Safari, Chrome etc.
 });   
@@ -258,7 +273,7 @@ EOT;
 function dbte_menu(){
   global $DBTE_INSTANCES;
   $ico = plugins_url('wp-db-table-editor/assets/images/database_edit.png');
-  add_menu_page('DB Table Editor', 'DB Table Editor', 'read', 'wp-db-table-editor',
+  add_menu_page(__('DB Table Editor', 'wp-db-table-editor'), __('DB Table Editor', 'wp-db-table-editor'), 'read', 'wp-db-table-editor',
                 'dbte_main_page', $ico, 50);
 
   $displayed = 0;
@@ -282,17 +297,18 @@ add_action('admin_menu', 'dbte_menu');
  */
 function dbte_main_page(){
   global $DBTE_INSTANCES;
+  $pluginDescription = sprintf(__('This plugin allows viewing, editing, and exporting of database tables in your wordpress database through the admin interface.  See the %sREADME.md%s for information on configuring this plugin.', 'wp-db-table-editor'),
+    '<a href="https://github.com/AccelerationNet/wp-db-table-editor/blob/master/README.md">',
+    '</a>');
+  $configuredDBTablesTitle = __('Configured Database Tables', 'wp-db-table-editor');
   echo <<<EOT
 <h2>DB Table Editor</h2>
 <a href="https://github.com/AccelerationNet/wp-db-table-editor/"><h4>
    Github - DB Table Editor</h4></a>
 <p style="max-width:600px;">
-  This plugin allows viewing, editing, and exporting of database tables 
-  in your wordpress database through the admin interface.  See the
-  <a href="https://github.com/AccelerationNet/wp-db-table-editor/blob/master/README.md">README.md</a> 
-  for information on configuring this plugin.
+  $pluginDescription
 </p>
-<h3> Configured Database Tables </h3>
+<h3> $configuredDBTablesTitle </h3>
 <ul>
 
 EOT;
