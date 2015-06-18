@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: DB-table-editor\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: Thu Jun 18 2015 10:48:46 GMT+0200 (CEST)\n"
-"POT-Revision-Date: Thu Jun 18 2015 10:49:04 GMT+0200 (CEST)\n"
+"POT-Revision-Date: Thu Jun 18 2015 16:20:30 GMT+0200 (CEST)\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -24,53 +24,62 @@ msgstr ""
 "esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
 "X-Generator: Loco - https://localise.biz/"
 
-#: ../db-table-editor.php:71
+#: ../db-table-editor.php:75
 msgid "DB-Table-Editor Cannot READ DATA SOURCE"
 msgstr ""
 
-#: ../db-table-editor.php:199
+#: ../db-table-editor.php:157
+#, php-format
+msgid "Showing %d of %d rows - items with unsaved changes are not filtered"
+msgstr ""
+
+#: ../db-table-editor.php:158
+msgid "Are you sure you wish to remove this row"
+msgstr ""
+
+#: ../db-table-editor.php:159
+msgid "Delete this Row"
+msgstr ""
+
+#: ../db-table-editor.php:213
 msgid "No Database Table Configured to Edit"
 msgstr ""
 
-#: ../db-table-editor.php:211
+#: ../db-table-editor.php:225
 #, php-format
 msgid "There are %s unsaved changes"
 msgstr ""
 
-#: ../db-table-editor.php:212
+#: ../db-table-editor.php:226
 #, php-format
 msgid "Save %s Changes"
 msgstr ""
 
-#: ../db-table-editor.php:213
+#: ../db-table-editor.php:227
 msgid "New"
 msgstr ""
 
-#: ../db-table-editor.php:214
+#: ../db-table-editor.php:228
 msgid "Undo"
 msgstr ""
 
-#: ../db-table-editor.php:229
+#: ../db-table-editor.php:243
 msgid "Export to CSV"
 msgstr ""
 
-#: ../db-table-editor.php:230
+#: ../db-table-editor.php:244
 msgid "Clear Filters"
 msgstr ""
 
-#: ../db-table-editor.php:231
+#: ../db-table-editor.php:245
 msgid "Showing 0 of 0 rows"
 msgstr ""
 
-#: ../db-table-editor.php:232
+#: ../db-table-editor.php:246
 msgid "You have unsaved data, are you sure you want to quit"
 msgstr ""
 
-#: ../db-table-editor.php:271 ../db-table-editor.php:271
-msgid "DB Table Editor"
-msgstr ""
-
-#: ../db-table-editor.php:295
+#: ../db-table-editor.php:309
 #, php-format
 msgid ""
 "This plugin allows viewing, editing, and exporting of database tables in "
@@ -78,6 +87,6 @@ msgid ""
 "for information on configuring this plugin."
 msgstr ""
 
-#: ../db-table-editor.php:298
+#: ../db-table-editor.php:312
 msgid "Configured Database Tables"
 msgstr ""

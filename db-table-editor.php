@@ -64,7 +64,6 @@ function wp_db_load_plugin_textdomain() {
 }
 add_action( 'plugins_loaded', 'wp_db_load_plugin_textdomain' );
 
-
 /*
  * Gets the DBTE_DataTable of the current DBTE instance
  */
@@ -148,9 +147,19 @@ function dbte_scripts($hook){
   wp_enqueue_script('dbte-date-editor-js', 
     $base.'/assets/dbte-date-editor.js', 
                     array('slick-grid-js', 'moment-js', 'jquery', 'jquery-ui-datepicker'));
-  wp_enqueue_script('db-table-editor-js', 
+  
+  wp_enqueue_script('sprintf-js', $base.'/assets/sprintf.js');
+  
+  wp_register_script('db-table-editor-js', 
     $base.'/assets/db-table-editor.js', 
-                    array('slick-grid-js', 'jquery', 'json2', 'moment-js', 'dbte-date-editor-js'));
+                    array('slick-grid-js', 'jquery', 'json2', 'moment-js', 'dbte-date-editor-js', 'sprintf-js'));
+  $translation_array = array(
+    'row_count' => __( 'Showing %d of %d rows - items with unsaved changes are not filtered', 'wp-db-table-editor' ),
+    'confirm_delete_row' => __( 'Are you sure you wish to remove this row', 'wp-db-table-editor' ),
+    'delete_button' => __( 'Delete this Row', 'wp-db-table-editor' )
+  );
+  wp_localize_script( 'db-table-editor-js', 'translations', $translation_array );
+  wp_enqueue_script('dbte-date-editor-js');
 
   do_action('db-table-editor_enqueue_scripts');
   if($cur->jsFile) wp_enqueue_script($cur->jsFile);
@@ -255,8 +264,8 @@ jQuery(function(){
 
 if(window.addEventListener)
 window.addEventListener("beforeunload", function (e) {
-  if(DBTableEditor.modifiedRows.length == 0) return;
-  var confirmationMessage = "$confirmationMessage";
+  if(DBTableEditor.modifiedRows.length == 0) return; 
+ var confirmationMessage = "$confirmationMessage";
   (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
   return confirmationMessage;                                //Webkit, Safari, Chrome etc.
 });   
@@ -273,7 +282,7 @@ EOT;
 function dbte_menu(){
   global $DBTE_INSTANCES;
   $ico = plugins_url('wp-db-table-editor/assets/images/database_edit.png');
-  add_menu_page(__('DB Table Editor', 'wp-db-table-editor'), __('DB Table Editor', 'wp-db-table-editor'), 'read', 'wp-db-table-editor',
+  add_menu_page('DB Table Editor', 'DB Table Editor', 'read', 'wp-db-table-editor',
                 'dbte_main_page', $ico, 50);
 
   $displayed = 0;
