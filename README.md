@@ -46,6 +46,9 @@ screens).  This was preferable to me, because my configuration is
 safely in source control (a problem I had when DB-toolkit would
 upgrade and lose all configuration).
 
+## Screenshots ##
+
+1. Here's a screenshot of it in action
 
 ## Installation ##
 
