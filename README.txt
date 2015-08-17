@@ -191,6 +191,16 @@ page.  Please use with care.
 
 == Troubleshooting ==
 
+Feel free to ask support questions / open trouble tickets 
+
+ * https://wordpress.org/support/plugin/wp-db-table-editor
+ * https://github.com/AccelerationNet/wp-db-table-editor/issues
+
+=== FAQ ===
+
+ * I dont see any interface / nothing changed?
+  * Did you complete the installation process, including appropriate
+    `add_db_table_editor` calls?
  * My delete button is missing / I Can't Edit
   * You either dont have `editcap` or `id_column` is misconfigured
   * https://github.com/AccelerationNet/wp-db-table-editor/issues/5
@@ -214,6 +224,40 @@ cf7dbsubmit stores its data in a "hashtable" format of:
  
 but we want to present this in a more excel fasion of each field being
 a column of our spreadsheet and each row being a different submission
+
+
+== ChangeLog ==
+
+For detailed information, please view:
+
+https://github.com/AccelerationNet/wp-db-table-editor/commits
+
+Version: 1.4.1 - 2015-06-19
+    * added some missing files for translation
+
+Version: 1.4 - 2015-06-18
+    * nikomuse provided i18n support
+
+Version: 1.3.2 - 2015-03-30
+    * introduce action `db_table_editor_init`, for other plugins
+      to use
+
+Version: 1.3.1 - 2015-03-30
+    * Introduce PhpSqlParser and use it instead of my
+      half-implemented index scanning, for inserting the where clause
+
+Version: 1.3 - 2015-02-18 10:30
+    * !! API CHANGE `update_cb`, `delete_cb`, and `dbte_row_updated`
+      all accept ID arguments -- TODO: perhaps these should accept
+      keyword arg arrays, to make it handle upgrades more gracefully?
+
+Version: 1.2.8 - 2015-02-04 10:30
+    * better docs
+    * better examples
+    * dbte_row_inserted, dbte_row_updated, dbte_row_deleted actions
+
+
+ 
 
 
 == Contributers and Thanks ==

@@ -196,6 +196,16 @@ page.  Please use with care.
 
 ## Troubleshooting ##
 
+Feel free to ask support questions / open trouble tickets 
+
+ * https://wordpress.org/support/plugin/wp-db-table-editor
+ * https://github.com/AccelerationNet/wp-db-table-editor/issues
+
+### FAQ ###
+
+ * I dont see any interface / nothing changed?
+  * Did you complete the installation process, including appropriate
+    `add_db_table_editor` calls?
  * My delete button is missing / I Can't Edit
   * You either dont have `editcap` or `id_column` is misconfigured
   * https://github.com/AccelerationNet/wp-db-table-editor/issues/5
