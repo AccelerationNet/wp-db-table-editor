@@ -232,6 +232,10 @@ For detailed information, please view:
 
 https://github.com/AccelerationNet/wp-db-table-editor/commits
 
+Version: 1.4.2 - 2015-08-17
+    * bug fixes: new rows were not updating their id
+    * saving now submits the currently active cell if there is one
+    
 Version: 1.4.1 - 2015-06-19
     * added some missing files for translation
 

@@ -52,14 +52,13 @@ DBTableEditor.makeSaveCB = function(rows){
 
     // reset save tracking
     jQuery.each(rows, function(idx, item) {
-      //item = DBTableEditor.dataView.getItemById( id );
       item.newRow = false;
       item.dirty = false;
       item.modifiedIdxs =[];
     });
     // update ids
     var pair;
-    jQuery.each(newIds, function(pair){
+    jQuery.each(newIds, function(idx, pair){
       if(!pair.rowId) return true;
       var item = DBTableEditor.dataView.getItemById( pair.rowId );
       console.log(item, pair.rowId);
@@ -78,6 +77,8 @@ DBTableEditor.clearFilters = function(){
 };
 
 DBTableEditor.save = function(){
+  if (Slick.GlobalEditorLock.isActive() && !Slick.GlobalEditorLock.commitCurrentEdit())
+    return;
   jQuery('button.save').attr("disabled", "disabled");
   var src = jQuery('button.save img').attr('src');
   jQuery('button.save img').attr('src',src.replace('accept.png','loading.gif'));
@@ -89,7 +90,7 @@ DBTableEditor.save = function(){
     // console.log(column, r.cell);
     if(column && column.isDate){
       r.item[r.cell-1] = DBTableEditor.toISO8601(r.item[r.cell-1], true);
-      console.log('Saving date',  r.item, r.cell, column, r.item[r.cell-1]);
+      //console.log('Saving date',  r.item, r.cell, column, r.item[r.cell-1]);
     }
 
     // cells have a delete idx to be removed
@@ -176,7 +177,7 @@ DBTableEditor.filterRow = function (item) {
 };
 
 DBTableEditor.deleteSuccess = function(data, id, rowId){
-  console.log('Removed', data, id, rowId);
+  //console.log('Removed', data, id, rowId);
   DBTableEditor.dataView.deleteItem(rowId);
 };
 
@@ -241,7 +242,7 @@ DBTableEditor.exportCSV = function(){
   delete(args["page"]);
   var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.id
    +'&'+jQuery.param(args);
-  console.log('Redirecting to export:', url);
+  //console.log('Redirecting to export:', url);
   window.location=url;
 };
 
