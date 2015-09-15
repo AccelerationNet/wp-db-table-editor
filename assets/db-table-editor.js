@@ -102,7 +102,7 @@ DBTableEditor.save = function(){
     h[r.item.id] = r.item;
     // the extend ensures we send object json which includes ".id"
     // instead of array json which elides it
-    toSave.push(jQuery.extend({}, r.item));
+    toSave.push(jQuery.extend({}, DBTableEditor.default_values, r.item));
     rows.push(r.item);
   }
   //console.log(toSave);
@@ -306,17 +306,14 @@ DBTableEditor.enableGridCellNavigation = function() {
   DBTableEditor.grid.onKeyDown.unsubscribe(DBTableEditor.disableCellNavHandler);
 };
 
-DBTableEditor.onload = function(opts){
-  // TODO: switch to objects so there can be more than one table to edit *sigh*
-  //console.log('Loading db table');
-  DBTableEditor.query = DBTableEditor.parseQuery(window.location.search.substring(1));
-  DBTableEditor.hashQuery = DBTableEditor.parseQuery(window.location.hash.substring(1));
+DBTableEditor.afterLoadDataHandler = function(data){
+  DBTableEditor.data = data;
+  DBTableEditor.afterLoadData();
+  jQuery(".status .loading").hide();
+};
 
-  jQuery.extend(DBTableEditor, opts);
-  DBTableEditor.options = opts;
-  if(!DBTableEditor.id_column) DBTableEditor.id_column='id';
-  DBTableEditor.id_column = DBTableEditor.id_column.toLowerCase();
-  if(!DBTableEditor.data){ return console.log("No Data for DBTableEditor");}
+DBTableEditor.afterLoadData = function(){
+  var opts = DBTableEditor.options;
   var rows = DBTableEditor.data.rows;
   var columns = DBTableEditor.data.columns;
   var columnMap = DBTableEditor.columnMap = {};
@@ -325,7 +322,7 @@ DBTableEditor.onload = function(opts){
     DBTableEditor.noedit_columns = DBTableEditor.noedit_columns.split(/\s*,\s*/);
   if(typeof(DBTableEditor.hide_columns)=="string")
     DBTableEditor.hide_columns = DBTableEditor.hide_columns.split(/\s*,\s*/);
-  DBTableEditor.default_values = DBTableEditor.parseQuery(opts.default_values);
+  DBTableEditor.default_values = opts.default_values;
 
   // init columns
   for( var i=0, c ; c=columns[i] ; i++){
@@ -543,7 +540,25 @@ DBTableEditor.onload = function(opts){
   DBTableEditor.updatePagingInfo();
 
   jQuery('button.save').attr("disabled", null);
+};
 
+DBTableEditor.onload = function(opts){
+  // TODO: switch to objects so there can be more than one table to edit *sigh*
+  //console.log('Loading db table');
+  DBTableEditor.query = DBTableEditor.parseQuery(window.location.search.substring(1));
+  DBTableEditor.hashQuery = DBTableEditor.parseQuery(window.location.hash.substring(1));
 
-  //console.log('Finished loading db table');
+  jQuery.extend(DBTableEditor, opts);
+  DBTableEditor.options = opts;
+  if(!DBTableEditor.id_column) DBTableEditor.id_column='id';
+  DBTableEditor.id_column = DBTableEditor.id_column.toLowerCase();
+
+  if(DBTableEditor.data){
+    DBTableEditor.afterLoadData();
+  }
+  else if (DBTableEditor.dataUrl){
+    jQuery(".status .loading").show();
+    jQuery.get(DBTableEditor.dataUrl).then(DBTableEditor.afterLoadDataHandler);
+  }
+  else return console.log("No Data for DBTableEditor");
 };

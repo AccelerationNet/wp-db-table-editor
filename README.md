@@ -97,6 +97,9 @@ This supports `wp_parse_args` style arguments.
  * `autoHeight`: passes the autoHeight option to slickgrid (makes
    there not be a vertical scrollbar on the grid and instead in the
    window)
+ * `async_data`: request data asyncronously instead of inlining
+   it. Makes slow queries "seem" faster.
+ * `default_values`: an a_array of default values that new rows should have
 
 Example:
 
