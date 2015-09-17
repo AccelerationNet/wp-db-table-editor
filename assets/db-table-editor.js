@@ -114,9 +114,11 @@ DBTableEditor.save = function(){
     rows:toSave
   });
 
-  jQuery.post(ajaxurl, {action:'dbte_save',
-                        data:toSend,
-                        table:DBTableEditor.id})
+  jQuery.post(ajaxurl,
+              jQuery.extend({},DBTableEditor.query,DBTableEditor.hashQuery,
+                            {action:'dbte_save',
+                             data:toSend,
+                             table:DBTableEditor.id}))
     .success(DBTableEditor.makeSaveCB(rows))
     .error(DBTableEditor.saveFailCB);
 

@@ -76,8 +76,7 @@ EOT;
 if(function_exists('add_db_table_editor')){
   $base = Array(
     'table'=>'wp_cf7dbplugin_submits',
-    'insert_cb'=>'xxx_contacts_insert',
-    'update_cb'=>'xxx_contacts_update',
+    'save_cb'=>'xxx_contacts_save',
     'delete_cb'=>'xxx_contacts_delete',
     'hide_columns'=>"id",
     'cap'=>"edit_others_posts",
@@ -95,55 +94,29 @@ if(function_exists('add_db_table_editor')){
 // When inserting a new row, we need to convert it from a row
 // into a more "hashtable" style database schema (that is, one 
 // row in the db for each "column" in our incoming dataset
-function xxx_contacts_insert($dbte, $vals, $columns, $idxs){
+function xxx_contacts_save($args){
   global $wpdb;
-  $id = $dbte->id;
-  $subtime = function_exists('microtime') ? microtime(true) : time();
-  
-  foreach($vals as $k=>$v){
-    $wpdb->insert('wp_cf7dbplugin_submits',
-      Array('field_value'=>$v, 'field_name'=>$k,
-            'form_name'=>$id, 'submit_time'=>$subtime,
-            'field_order'=>array_search($k, $columns)
-      ));
-  }
-}
-
-// When inserting a new row, we need to convert it from a row
-// into a more "hashtable" style database schema (that is, one 
-// row in the db for each "column" in our incoming dataset
-function xxx_contacts_update($dbte, $vals, $columns, $idxs, $id){
-  global $wpdb;
+  $dbte = $args['table'];
+  $columns = $args['columns'];
+  $columns = $args['columns'];
   $id = $dbte->id;
 
   $cs = implode($columns, ', ');
   $is = implode($idxs, ', ');
+  $isinsert = $args['id'] === null;
   $subtime = @$vals["submit_time"];
   unset($vals["submit_time"]);
   unset($vals["Submit Time"]);
-
-  $sql = $wpdb->prepare("
-     SELECT field_value FROM wp_cf7dbplugin_submits
-     WHERE field_name='status' and form_name=%s AND submit_time=%s",
-                        $id, $subtime);
-  $incomingStatus = $wpdb->get_var($sql);
+  if($isinsert) $subtime = function_exists('microtime') ? microtime(true) : time();
 
   foreach($vals as $k => $v){
     // our column was not edited continue
-    if(!in_array(array_search($k, $columns),$idxs)) continue;
+    if(!$isinsert && !in_array(array_search($k, $columns),$idxs)) continue;
     $rc = $wpdb->update('wp_cf7dbplugin_submits',
             array('field_value'=>$v),
             array('form_name'=>$id, 'submit_time'=>$subtime,
                   'field_name'=>$k));
-    if($k == 'status' && $v != $incomingStatus){
-      xxx_status_change_email($vals, $columns);
-    }
   }
-}
-
-function xxx_status_change_email($vals, $columns){
-  // send an email notifying the user of the change in their request
-  // status
 }
 
 // Delete all the database rows for this submission

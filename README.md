@@ -87,11 +87,13 @@ This supports `wp_parse_args` style arguments.
  * `noedit_columns`, `hide_columns`: You may wish to hide some columns
    or prevent edit.  You may do so by setting these fields to the name
    of columns you wish hidden or uneditable (eg: the id)
- * `insert_cb`,`update_cb`, `delete_cb`: function names to be called with
+ * `save_cb`, `delete_cb`: function names to be called with an array of data:
    the dbte, update array, column array and modified indexes array
-   `call_user_func($cur->insert_cb,$cur, $up, $cols, $idxs);`
-   `call_user_func($cur->update_cb,$cur, $up, $cols, $idxs, $id);`
+   `call_user_func($cur->save_cb,Array('table'=>$cur, 'update'=>$up,
+                  'columns'=>$cols, 'indexes'=>$idxs, 'id'=>$id));`
    `call_user_func($cur->delete_cb,$cur,$id);`
+   If your call back inserts data it should fill in $data['id'] and accept data
+   by reference
  * `auto_date`: should columns that appear to be datetimes, be treated as such
    This is based on the columns data type
  * `autoHeight`: passes the autoHeight option to slickgrid (makes
@@ -165,7 +167,7 @@ function dbTableEditorScripts(){
   add_action('db-table-editor_enqueue_scripts', 'dbTableEditorScripts');
 ```
 
-## dbte_row_deleted, dbte_row_updated, dbte_row_inserted
+## dbte_row_saved, dbte_row_deleted
 
 Called after a row is deleted, updated, or inserted passes
 
@@ -176,10 +178,11 @@ function my_dbte_row_deleted($currentTable, $idRemoved){
   // do things
 }
 
-add_action('dbte_row_updated', 'my_dbte_row_upserted', 10, 4);
-add_action('dbte_row_inserted', 'my_dbte_row_upserted', 10, 4);
+add_action('dbte_row_saved', 'my_dbte_row_saved', 10);
 
-function my_dbte_row_upserted($currentTable, $values, $columns, $indexedModified){
+$args = Array('table'=>$cur, 'update'=>$up,
+              'columns'=>$cols, 'indexes'=>$idxs, 'id'=>$id));`
+function my_dbte_row_saved($args){
   // do things
 }
 

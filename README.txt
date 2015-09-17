@@ -87,14 +87,22 @@ This supports `wp_parse_args` style arguments.
  * `noedit_columns`, `hide_columns`: You may wish to hide some columns
    or prevent edit.  You may do so by setting these fields to the name
    of columns you wish hidden or uneditable (eg: the id)
- * `insert_cb`,`update_cb`, `delete_cb`: function names to be called with
+ * `save_cb`, `delete_cb`: function names to be called with an array of data:
    the dbte, update array, column array and modified indexes array
-   `call_user_func($cur->insert_cb,$cur, $up, $cols, $idxs);`
+   `call_user_func($cur->save_cb,Array('table'=>$cur, 'update'=>$up,
+                  'columns'=>$cols, 'indexes'=>$idxs, 'id'=>$id));`
+   `call_user_func($cur->delete_cb,$cur,$id);`
+   If your call back inserts data it should fill in $data['id'] and accept data
+   by reference
  * `auto_date`: should columns that appear to be datetimes, be treated as such
    This is based on the columns data type
  * `autoHeight`: passes the autoHeight option to slickgrid (makes
    there not be a vertical scrollbar on the grid and instead in the
    window)
+ * `async_data`: request data asyncronously instead of inlining
+   it. Makes slow queries "seem" faster.
+ * `default_values`: an a_array of default values that new rows should have
+
 
 Example:
 
@@ -231,6 +239,19 @@ a column of our spreadsheet and each row being a different submission
 For detailed information, please view:
 
 https://github.com/AccelerationNet/wp-db-table-editor/commits
+
+Version: 1.5 - 2015-09-15
+    * replace update & insert call backs and actions with dbte_save
+      that passes an argument array instead of list of arguments.
+      should hopefully make upgrading easier (updated example).
+      This also allows the callback to set the "id" of the argument
+      array (should be passed by ref) in case of insert.
+    * ajax_data: option makes the grid pull data using ajax instead of
+      inlining it.  This might make the page appear more responsive if
+      the query takes forever. You are probably better off improving
+      your query.
+    * when calling save ajax, pass all query arguments for the current
+      page.  Also set default values along the way
 
 Version: 1.4.2 - 2015-08-17
     * bug fixes: new rows were not updating their id

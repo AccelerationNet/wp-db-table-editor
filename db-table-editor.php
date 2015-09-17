@@ -3,7 +3,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.4.2
+Version: 1.5.0
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 Text Domain: wp-db-table-editor
@@ -413,7 +413,25 @@ function dbte_save_cb() {
     if($no_edit_cols) foreach($no_edit_cols as $noedit){
       unset($up[$noedit]);
     }
-    if($id != null){
+
+
+    if($cur->save_cb){
+        $isinsert = $id===null;
+        $data = Array('table'=>$cur,
+                      'update'=>$up,
+                      'columns'=>$cols,
+                      'indexes'=>$idxs[$ridx],
+                      'id'=>$id,
+                      'isinsert'=>$isinsert);
+        call_user_func_array($cur->save_cb, array(&$data));
+        if($isinsert && $data['id']){
+            $ids= Array('rowId'=>@$r["id"], 'dbid'=>$wpdb->insert_id);
+            if(!@$ids['rowId']) $ids['rowId'] = @$r["rowId"];
+            $new_ids[] = $ids;
+        }
+        do_action('dbte_row_saved', array(&$data));
+    }
+    else if($id != null){
       if($cur->update_cb){
         call_user_func($cur->update_cb,$cur, $up, $cols, $idxs[$ridx], $id);
       }
