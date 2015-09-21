@@ -240,6 +240,9 @@ For detailed information, please view:
 
 https://github.com/AccelerationNet/wp-db-table-editor/commits
 
+Version: 1.5.1 - 2015-09-21
+    * Fixed bug with new rows without default values
+    
 Version: 1.5 - 2015-09-15
     * replace update & insert call backs and actions with dbte_save
       that passes an argument array instead of list of arguments.

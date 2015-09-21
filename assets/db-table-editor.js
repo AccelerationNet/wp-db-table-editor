@@ -440,9 +440,11 @@ DBTableEditor.afterLoadData = function(){
       }
     }
     args.item = item;
-    jQuery.each(DBTableEditor.default_values,function(k,v){
-      item[DBTableEditor.columnMap[k]]=v;
-    });
+    if(DBTableEditor.default_values){
+      jQuery.each(DBTableEditor.default_values,function(k,v){
+        item[DBTableEditor.columnMap[k]]=v;
+      });
+    }
     grid.invalidateRow(rows.length);
     item.rowId = item.id = DBTableEditor.newId();
     item.newRow = true;
