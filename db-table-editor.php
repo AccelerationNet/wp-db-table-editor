@@ -129,7 +129,7 @@ function dbte_scripts($hook){
                     array('slick-core-js', 'jquery-ui-datepicker'));
 
   wp_enqueue_style('dbte-jquery-ui-css',
-    'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/smoothness/jquery-ui.css');
+    '//ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/smoothness/jquery-ui.css');
 
   wp_enqueue_script('slick-dataview', 
     $base.'/assets/SlickGrid/slick.dataview.js',
