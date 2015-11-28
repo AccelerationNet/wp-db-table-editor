@@ -240,6 +240,9 @@ For detailed information, please view:
 
 https://github.com/AccelerationNet/wp-db-table-editor/commits
 
+Version: 1.5.2 - 2015-11-28
+    * fixed confused ajax-vs-async nomenclature
+
 Version: 1.5.1 - 2015-09-21
     * Fixed bug with new rows without default values
     
@@ -249,7 +252,7 @@ Version: 1.5 - 2015-09-15
       should hopefully make upgrading easier (updated example).
       This also allows the callback to set the "id" of the argument
       array (should be passed by ref) in case of insert.
-    * ajax_data: option makes the grid pull data using ajax instead of
+    * async_data: option makes the grid pull data using ajax instead of
       inlining it.  This might make the page appear more responsive if
       the query takes forever. You are probably better off improving
       your query.

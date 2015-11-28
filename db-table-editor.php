@@ -3,7 +3,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.5.1
+Version: 1.5.2
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 Text Domain: wp-db-table-editor
@@ -233,14 +233,14 @@ function dbte_render($id=null){
 EOT;
   }
   $dataUrl = null;
-  if($cur->ajax_data){
+  if($cur->async_data){
       $dataUrl = admin_url( 'admin-ajax.php')."?".$_SERVER["QUERY_STRING"]
                .'&action=dbte_data&table='.$cur->id;
   }
            
   $args = Array(
     "baseUrl"=>$base,
-    "data" => $cur->ajax_data ? null : dbte_get_data_table(),
+    "data" => $cur->async_data ? null : dbte_get_data_table(),
     "dataUrl" => $dataUrl
   );
   // copy all DBTE slots to the json array
