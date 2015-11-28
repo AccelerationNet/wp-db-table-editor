@@ -1,6 +1,9 @@
+Version: 1.5.3 - 2015-11-28
+    * Better numeric sorting
+
 Version: 1.5.2 - 2015-11-28
     * fixed confused ajax-vs-async nomenclature
-    
+
 Version: 1.5.1 - 2015-09-21
     * Fixed bug with new rows without default values
 
