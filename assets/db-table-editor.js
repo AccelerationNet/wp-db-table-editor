@@ -480,7 +480,8 @@ DBTableEditor.afterLoadData = function(){
     var cols = args.sortCols;
     var typedVal = function(c, r, n){
       var v = r[n];
-      if(c.type == 'int') return Number(v);
+      var vN = Number(v);
+      if(!isNaN(vN)) return vN;
       else if(c.id.search('date')>=0) return new Date(v);
       return v && v.toString().toLowerCase();
     };
@@ -490,6 +491,10 @@ DBTableEditor.afterLoadData = function(){
         var sign = c.sortAsc ? 1 : -1;
         var value1 = typedVal(c.sortCol,r1,field),
             value2 = typedVal(c.sortCol,r2,field);
+        if( typeof(value1) != typeof(value2) ){
+          value1=value2.toString();
+          value2=value2.toString();
+        }
         var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
         if (result != 0) {
           return result;
