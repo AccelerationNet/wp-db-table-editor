@@ -83,10 +83,11 @@ This supports `wp_parse_args` style arguments.
  * `noedit`: turns off the editing abilities (same as editcap=nosuchcapability)
  * `columnFilters`: Default column filters, this is an array of column->val
    to be applied as default column fitlers when the page is loaded
- * `columnNameMap`: A map of actual column names to displayed label
+ * `columnNameMap`: A map of actual column names to displayed label,
+    EG: columnNameMap=>Array('column_name'=>'Column Alias');
  * `noedit_columns`, `hide_columns`: You may wish to hide some columns
    or prevent edit.  You may do so by setting these fields to the name
-   of columns you wish hidden or uneditable (eg: the id)
+   of columns you wish hidden or uneditable (eg: the id) 
  * `save_cb`, `delete_cb`: function names to be called with an array of data:
    the dbte, update array, column array and modified indexes array
    `call_user_func($cur->save_cb,Array('table'=>$cur, 'update'=>$up,
