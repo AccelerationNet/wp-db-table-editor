@@ -216,6 +216,14 @@ Feel free to ask support questions / open trouble tickets
 
 == Advanced Examples ==
 
+=== Custom Javascript and Buttons on the table editor ===
+
+See: examples/custom-buttons-and-js.php
+     examples/custom-buttons.js
+
+Shows how to add custom javascript to a report page and adds a custom
+load button on the grid
+
 === CF7 DB Submit Plugin integration ===
 
 See: examples/cf7dbsubmit_integration.php
