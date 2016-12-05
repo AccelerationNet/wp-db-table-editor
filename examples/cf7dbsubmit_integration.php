@@ -98,7 +98,7 @@ function xxx_contacts_save($args){
   global $wpdb;
   $dbte = $args['table'];
   $columns = $args['columns'];
-  $columns = $args['columns'];
+  $vals = $args['update'];
   $id = $dbte->id;
 
   $cs = implode($columns, ', ');
