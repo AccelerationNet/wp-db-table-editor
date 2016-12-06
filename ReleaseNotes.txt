@@ -1,3 +1,6 @@
+Version: 1.5.4 - 2016-12-06
+    * trim noedit_columns!
+
 Version: 1.5.3 - 2015-11-28
     * Better numeric sorting
 

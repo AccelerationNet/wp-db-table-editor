@@ -105,7 +105,7 @@ DBTableEditor.save = function(){
     toSave.push(jQuery.extend({}, DBTableEditor.default_values, r.item));
     rows.push(r.item);
   }
-  //console.log(toSave);
+  //console.log('trying to save: ', toSave);
   var cols = DBTableEditor.data.columns.map(function(c){return c.originalName;});
   cols.shift(); // remove buttons
   var toSend = JSON.stringify({
