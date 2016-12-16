@@ -249,6 +249,15 @@ For detailed information, please view:
 
 https://github.com/AccelerationNet/wp-db-table-editor/commits
 
+Version: 1.5.5 - 2016-12-16
+    * fix deprecated constructor
+
+Version: 1.5.4 - 2016-12-06
+    * trim noedit_columns!
+
+Version: 1.5.3 - 2016-03-14
+    * Better numeric sorting
+
 Version: 1.5.2 - 2015-11-28
     * fixed confused ajax-vs-async nomenclature
 

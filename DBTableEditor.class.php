@@ -44,7 +44,7 @@ function insert_where($sql, $where){
 
 class DBTE_DataTable {
   var $rows,$columns, $columnNames;
-  function DBTE_DataTable($args=null){
+  function  __construct($args=null){
     global $wpdb;
     $args = wp_parse_args($args);
     $sql = @$args['sql'];
@@ -81,7 +81,7 @@ class DBTableEditor {
     $noedit, $editcap, $noedit_columns, $hide_columns, $default_values,
       $columnFilters, $columnNameMap, $save_cb, $insert_cb, $update_cb, $delete_cb,
       $id_column, $auto_date, $async_data;
-  function DBTableEditor($args=null){
+  function __construct($args=null){
     $args = wp_parse_args($args, array('cap'=>'edit_others_posts'));
     foreach($args as $k => $v) $this->{$k} = $v;
     if(!$this->id) $this->id = $this->table;
