@@ -148,6 +148,8 @@ rowButtonFormatter and should return a string of html.
 eg:
    out += fn(row, cell, value, columnDef, dataContext);
 
+The button column width can be set by setting:
+DBTableEditor.buttonColumnWidth before the ready function is called
 
 
 # Hooks / Actions #

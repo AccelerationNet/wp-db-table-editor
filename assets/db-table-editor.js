@@ -76,6 +76,8 @@ DBTableEditor.clearFilters = function(){
   DBTableEditor.dataView.refresh();
 };
 
+DBTableEditor.buttonColumnWidth=75;
+
 DBTableEditor.save = function(){
   if (Slick.GlobalEditorLock.isActive() && !Slick.GlobalEditorLock.commitCurrentEdit())
     return;
@@ -382,8 +384,12 @@ DBTableEditor.afterLoadData = function(){
     console.log('Couldnt find a column:', DBTableEditor.id_column," defaulting to noedit");
     DBTableEditor.noedit = true;
   }
-  if(!DBTableEditor.noedit)
-    columns.unshift({id: 'buttons', formatter:DBTableEditor.rowButtonFormatter, width:75});
+  if(!DBTableEditor.noedit){
+    //console.log('Adding buttons column', DBTableEditor.buttonColumnWidth);
+    columns.unshift({id: 'buttons',
+                     formatter:DBTableEditor.rowButtonFormatter,
+                     width:DBTableEditor.buttonColumnWidth});
+  }
 
   //init rows
   for(var i=0, r ; r=rows[i] ; i++){
