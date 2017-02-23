@@ -234,15 +234,11 @@ DBTableEditor.rowButtonFormatter = function(row, cell, value, columnDef, dataCon
 DBTableEditor.exportCSV = function(){
   var args=jQuery.extend({}, DBTableEditor.query, DBTableEditor.hashQuery);
   var cols = DBTableEditor.data.columns;
-  jQuery(DBTableEditor.grid.getHeaderRow())
-   .find(':input').each(function(i, el){
-     var $el = jQuery(el),name = $el.attr('name'), val = $el.val(), c = cols[i+1];
-     if(val.length>0){
-       if(c.isDate) args[name]=DBTableEditor.toISO8601(val);
-       else args[name]=val;
-     }
-   });
-
+  args.ids=[];
+  jQuery.each(DBTableEditor.dataView.getFilteredItems(), function(idx, item){
+    args.ids.push(item.id);
+  });
+  args.ids = args.ids.join(',');
   delete(args["page"]);
   var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.id
    +'&'+jQuery.param(args);

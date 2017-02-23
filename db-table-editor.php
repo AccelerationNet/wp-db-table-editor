@@ -529,22 +529,21 @@ function dbte_export_csv(){
   global $wpdb;
   $cur = dbte_current(@$_REQUEST['table']);
   if(!$cur) return;
-  if($cur->editcap && !current_user_can($cur->editcap)) return;
+  // if($cur->editcap && !current_user_can($cur->editcap)) return;
+  $id_col = $cur->id_column;
+  $ids = @$_REQUEST['ids'];
   $tbl = $cur->table;
-
-  $wheres = array();
-  $filtered=false;
-  foreach($_REQUEST as $k=>$v){
-    if(strpos($k, "filter-")===0){
-      $k = str_replace('filter-','', $k);
-      if($cur->auto_date && dbte_is_date($v)) $wheres[] = $wpdb->prepare("$k = %s", $v);
-      else $wheres[] = $wpdb->prepare("$tbl.$k LIKE %s", '%'.$v.'%');
-      $filtered = true;
-    }
+  $wheres = Array();
+  if($ids){
+    $ids = explode(',', $ids);
+    $ids[]=-1;
+    // ensures that our sql is ok / escaped
+    foreach($ids as $idx=>$id){$ids[$idx] = intval($id);}
+    $ids = implode(', ', $ids);
+    $wheres[] = " $tbl.$id_col in ( $ids ) ";
   }
-
+  $tbl = $cur->table;
   $title = $cur->title;
-  if($filtered) $title .= '-filtered';
   $data = $cur->getData(array("where"=>$wheres));
   $columns = $data->columnNames;
   $rows = $data->rows;

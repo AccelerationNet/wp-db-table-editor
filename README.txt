@@ -251,6 +251,17 @@ For detailed information, please view:
 
 https://github.com/AccelerationNet/wp-db-table-editor/commits
 
+Version: 1.6.0 - 2017-02-23
+    * New (customized) version of SlickGrid (branched from 6pac@github)
+      * allow access to the default filter and the filtered items
+    * Handle exports by sending a list of ids to export rather than
+      trying to recreate the full filter set serverside. Allows rather
+      arbitrary JS filtering functions without having to get nitty gritty
+      on the server
+
+Version: 1.5.6 - 2017-02-22
+    * allow easy button column width configuration
+
 Version: 1.5.5 - 2016-12-16
     * fix deprecated constructor
 
