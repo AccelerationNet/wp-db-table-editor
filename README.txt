@@ -29,27 +29,6 @@ It supports:
  * CSV exports of filtered grid
  * Custom primary key names (but must be a single value / column)
 
-= Reasons and Expectations =
-
-Previously my company had been using DB-toolkit to provide minimal
-database interfaces for custom tables through the Wordpress admin.
-While the configuration was cumbersome for what we were doing, it did
-work and was easier than writing anything.  However, when DB-Toolkit
-stopped being maintained and I couldn't find a simple, but suitable
-replacement, I decided to tackle my goals more head on
-
-Use of this plugin requires a basic knowledge of PHP, and SQL.  It was
-written by a programmer to help accomplish his work and does not
-currently provide admin configuration screens (instead simple function
-calls in your theme's functions file are used to configure the
-screens).  This was preferable to me, because my configuration is
-safely in source control (a problem I had when DB-toolkit would
-upgrade and lose all configuration).
-
-== Screenshots ==
-
-1. Here's a screenshot of it in action
-
 == Installation ==
 
 This is installed the same way all wordpress plugins:
@@ -119,6 +98,28 @@ if(function_exists('add_db_table_editor')){
 
 }
 ```
+
+= Reasons and Expectations =
+
+Previously my company had been using DB-toolkit to provide minimal
+database interfaces for custom tables through the Wordpress admin.
+While the configuration was cumbersome for what we were doing, it did
+work and was easier than writing anything.  However, when DB-Toolkit
+stopped being maintained and I couldn't find a simple, but suitable
+replacement, I decided to tackle my goals more head on
+
+Use of this plugin requires a basic knowledge of PHP, and SQL.  It was
+written by a programmer to help accomplish his work and does not
+currently provide admin configuration screens (instead simple function
+calls in your theme's functions file are used to configure the
+screens).  This was preferable to me, because my configuration is
+safely in source control (a problem I had when DB-toolkit would
+upgrade and lose all configuration).
+
+== Screenshots ==
+
+1. Here's a screenshot of it in action
+
 
 == Adding an Interface on the fly ==
 
