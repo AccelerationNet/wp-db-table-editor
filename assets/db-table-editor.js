@@ -240,10 +240,16 @@ DBTableEditor.exportCSV = function(){
   });
   args.ids = args.ids.join(',');
   delete(args["page"]);
-  var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.id
-   +'&'+jQuery.param(args);
-  //console.log('Redirecting to export:', url);
-  window.location=url;
+  var url = ajaxurl+'?action=dbte_export_csv&table='+DBTableEditor.id;
+  var $form = jQuery('<form action="'+url+'" method="post"></form>');
+  jQuery.each(args, function(k,v){
+    var $in = jQuery("<input type='hidden' name='"+k+"'/>");
+    $in.val(v);
+    $form.append($in);
+  });
+  jQuery(document.body).append($form);
+  $form.submit();
+  // window.location=url;
 };
 
 DBTableEditor.updatePagingInfo = function(){
