@@ -68,26 +68,38 @@ add_db_table_editor function in your theme's `functions.php` file.
 This supports `wp_parse_args` style arguments. 
 
  * `title`: what shows up in the H1 on the screen and in menues
+  * ex: `title=>"My Product Reports Page"`
  * `table`: the table we wish to display / edit
+  * ex: `table=>"wp_my_custom_table"`
  * `id`: the admin interface id (defaults to table)
+  * ex: `id=>"custom_table_interface_1"`
  * `id_column`: the column in each row that names the id for the row
+  * ex: `id_column=>"id"`
  * `dataFn`: a function that returns the data to be displayed /
    edited, defaults to `select * from {table}`. This should return ARRAY_N
-   through wpdb->get_results. Alternatively it may return a DBTE_DataTable;
+   through wpdb->get_results. Alternatively it may return a DBTE_DataTable.
+   `dataFn` is called with the arguemnts array to add_db_table_editor;
+  * ex: `dataFn=>"myCustomInterfaceFunction"`
  * `jsFile`: the name of a registered script that will be enqueued for
    this interface
+  * ex: `jsFile=>"my-custom-interface-js"`
  * `cap`: the capability a user needs to view/edit this interface,
     defaults to edit_others_posts
+  * ex: `cap=>"edit_others_posts"`
  * `editcap`: the capability required to edit the grid, if not set
     all viewers are assumed to be editors
+  * ex: `editcap=>"edit_others_posts"`
  * `noedit`: turns off the editing abilities (same as editcap=nosuchcapability)
+  * ex: `noedit=>true`
  * `columnFilters`: Default column filters, this is an array of column->val
    to be applied as default column fitlers when the page is loaded
+  * ex: `columnFilters=>Array("Year"=>"2017")`
  * `columnNameMap`: A map of actual column names to displayed label
-   EG: `columnNameMap=>Array('column_name'=>'Column Alias')`
+  * Ex: `columnNameMap=>Array('column_name'=>'Column Alias')`
  * `noedit_columns`, `hide_columns`: You may wish to hide some columns
    or prevent edit.  You may do so by setting these fields to the name
    of columns you wish hidden or uneditable (eg: the id)
+  * Ex:`noedit_columns=>"data,id"` or `noedit_columns=>Array('data', 'id')`
  * `save_cb`, `delete_cb`: function names to be called with an array of data:
    the dbte, update array, column array and modified indexes array
    `call_user_func($cur->save_cb,Array('table'=>$cur, 'update'=>$up,
@@ -97,12 +109,17 @@ This supports `wp_parse_args` style arguments.
    by reference
  * `auto_date`: should columns that appear to be datetimes, be treated as such
    This is based on the columns data type
+  * Sort of buggy but allows some different date formats than iso8601
+  * Ex:`auto_date=>true`
  * `autoHeight`: passes the autoHeight option to slickgrid (makes
    there not be a vertical scrollbar on the grid and instead in the
    window)
+  * Ex:`auto_height=>true`
  * `async_data`: request data asyncronously instead of inlining
    it. Makes slow queries "seem" faster.
+  * Ex:`async_data=>true`
  * `default_values`: an a_array of default values that new rows should have
+  * Ex:`default_values=>Array("name"=>"First M Last")`
 
 Example:
 
