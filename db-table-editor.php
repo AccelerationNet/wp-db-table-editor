@@ -4,7 +4,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.6.1
+Version: 1.6.2
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 Text Domain: wp-db-table-editor
@@ -420,20 +420,20 @@ function dbte_save_cb() {
 
 
     if($cur->save_cb){
-        $isinsert = $id===null;
-        $data = Array('table'=>$cur,
-                      'update'=>$up,
-                      'columns'=>$cols,
-                      'indexes'=>$idxs[$ridx],
-                      'id'=>$id,
-                      'isinsert'=>$isinsert);
-        call_user_func_array($cur->save_cb, array(&$data));
-        if($isinsert && $data['id']){
-            $ids= Array('rowId'=>@$r["id"], 'dbid'=>$wpdb->insert_id);
-            if(!@$ids['rowId']) $ids['rowId'] = @$r["rowId"];
-            $new_ids[] = $ids;
-        }
-        do_action('dbte_row_saved', array(&$data));
+      $isinsert = $id===null;
+      $data = Array('table'=>$cur,
+                    'update'=>$up,
+                    'columns'=>$cols,
+                    'indexes'=>$idxs[$ridx],
+                    'id'=>$id,
+                    'isinsert'=>$isinsert);
+      call_user_func_array($cur->save_cb, array(&$data));
+      if($isinsert && $data['id']){
+        $ids= Array('rowId'=>@$r["id"], 'dbid'=>$wpdb->insert_id);
+        if(!@$ids['rowId']) $ids['rowId'] = @$r["rowId"];
+        $new_ids[] = $ids;
+      }
+      do_action('dbte_row_saved', array(&$data));
     }
     else if($id != null){
       if($cur->update_cb){
@@ -441,7 +441,13 @@ function dbte_save_cb() {
       }
       else{
         $where = array($id_col=>$id);
-        $wpdb->update($cur->table, $up , $where);
+        $res = $wpdb->update($cur->table, $up , $where);
+        if ($res === false){
+          error_log("Failed to update: no_edit:".print_r( $no_edit_cols, true));
+          error_log(print_r($up, true));
+          error_log($wpdb->last_error);
+        }
+        
       }
       do_action('dbte_row_updated', $cur, $up, $cols, $idxs, $id);
     }
@@ -450,7 +456,12 @@ function dbte_save_cb() {
         call_user_func($cur->insert_cb,$cur, $up, $cols, $idxs[$ridx]);
       }
       else{
-        $wpdb->insert($cur->table, $up);
+        $res = $wpdb->insert($cur->table, $up);
+        if ($res === false){
+          error_log("Failed to insert: no_edit:".print_r( $no_edit_cols, true));
+          error_log(print_r($up, true));
+          error_log($wpdb->last_error);
+        }
         $ids= Array('rowId'=>@$r["id"], 'dbid'=>$wpdb->insert_id);
         if(!@$ids['rowId']) $ids['rowId'] = @$r["rowId"];
         $new_ids[] = $ids;
@@ -463,7 +474,6 @@ function dbte_save_cb() {
   echo json_encode($new_ids);
   die();
 }
-
 /*
  * Ajax Delete Handler - called from delete buttons on each row of the clickgrid
  */
