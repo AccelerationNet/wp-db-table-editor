@@ -220,6 +220,7 @@ function dbte_render($id=null){
   $buttons="";
   if($cur->editcap && !current_user_can($cur->editcap)){
     $noedit = true;
+    $cur->noedit = true;
   }
   if( !$noedit ){
     $pendingSaveCnt = '<span class="pending-save-count">0</span>';
@@ -247,13 +248,7 @@ EOT;
   // copy all DBTE slots to the json array
   foreach($cur as $k => $v) { $args[$k] = $v; }
   unset($args['sql']);
-  if(!isset($args['noedit']) || !$args['noedit']){
-    $editcap = @$args['editcap'];
-    if(!$editcap) $editcap = 'edit_others_posts';
-    if(!current_user_can($editcap)){
-      $args['noedit'] = true;
-    }
-  }
+
   $json = json_encode($args);
   $loadingLabel = __('Loading data...', 'wp-db-table-editor');
   $exportButtonLabel = __('Export to CSV', 'wp-db-table-editor');
