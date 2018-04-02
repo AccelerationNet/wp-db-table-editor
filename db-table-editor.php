@@ -4,7 +4,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.6.2
+Version: 1.6.3
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 Text Domain: wp-db-table-editor
@@ -247,6 +247,13 @@ EOT;
   // copy all DBTE slots to the json array
   foreach($cur as $k => $v) { $args[$k] = $v; }
   unset($args['sql']);
+  if(!isset($args['noedit']) || !$args['noedit']){
+    $editcap = @$args['editcap'];
+    if(!$editcap) $editcap = 'edit_others_posts';
+    if(!current_user_can($editcap)){
+      $args['noedit'] = true;
+    }
+  }
   $json = json_encode($args);
   $loadingLabel = __('Loading data...', 'wp-db-table-editor');
   $exportButtonLabel = __('Export to CSV', 'wp-db-table-editor');
