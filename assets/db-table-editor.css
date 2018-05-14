@@ -20,3 +20,5 @@
    background:url(images/calendar.png); height:20px; width:20px; padding:2px;
 }
 
+
+.slick-row.new-row .slick-cell.r0:after{ content: " < new > "};

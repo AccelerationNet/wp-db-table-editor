@@ -61,7 +61,7 @@ DBTableEditor.makeSaveCB = function(rows){
     jQuery.each(newIds, function(idx, pair){
       if(!pair.rowId) return true;
       var item = DBTableEditor.dataView.getItemById( pair.rowId );
-      console.log(item, pair.rowId);
+      // console.log(item, pair.rowId);
       item[DBTableEditor.columnMap[DBTableEditor.id_column]] = pair.dbid;
       DBTableEditor.dataView.updateItem(pair.rowId, item);
     });
@@ -76,7 +76,7 @@ DBTableEditor.clearFilters = function(){
   DBTableEditor.dataView.refresh();
 };
 
-DBTableEditor.buttonColumnWidth=75;
+DBTableEditor.buttonColumnWidth=85;
 
 DBTableEditor.save = function(){
   if (Slick.GlobalEditorLock.isActive() && !Slick.GlobalEditorLock.commitCurrentEdit())
@@ -136,7 +136,14 @@ DBTableEditor.undo = function () {
   return false;
 };
 DBTableEditor.gotoNewRow = function () {
-  DBTableEditor.grid.gotoCell(DBTableEditor.grid.getDataLength(), 0, true);
+  var cols = DBTableEditor.grid.getColumns();
+  var i=0,c=null;
+  while ((c=cols[i])){
+    if (c.editor && c.selectable){ break;}
+    else{ i++;}
+  }
+  // console.log('going to new row and cell', i)
+  DBTableEditor.grid.gotoCell(DBTableEditor.grid.getDataLength(), i, true);
 };
 
 
@@ -195,11 +202,11 @@ DBTableEditor.deleteHandler = function(el){
   var rowid = btn.data('rowid');
   var row = DBTableEditor.dataView.getItemById(rowid);
   var rObj = {};
-  btn.parents('.slick-row').addClass('active');
   if(!id){
-    console.log("Cannot delete, no ID", btn.data());
+    DBTableEditor.dataView.deleteItem(rowid);
     return;
   }
+  btn.parents('.slick-row').addClass('active');
   if(!btn.is('button'))btn = btn.parents('button');
   if (!confirm(translations['confirm_delete_row'])) return;
 
@@ -219,9 +226,11 @@ DBTableEditor.rowButtonFormatter = function(row, cell, value, columnDef, dataCon
   // if(row==0)console.log(row,cell, value, columnDef, dataContext);
   var id = dataContext[DBTableEditor.columnMap[DBTableEditor.id_column]];
   var rowid = dataContext.id; // uses id, NOT id_column
-  if(!id) return null;
+  var out="";
+  // console.log(id, row, cell, value, columnDef);
+  if(!id){  out += "&lt; new &gt; "; }
   var url = DBTableEditor.baseUrl+'/assets/images/delete.png';
-  var out = '<button title="'+translations['delete_button']+'" class="delete" onclick="DBTableEditor.deleteHandler(this);return false;"'+
+  out += '<button title="'+translations['delete_button']+'" class="delete" onclick="DBTableEditor.deleteHandler(this);return false;"'+
     ' data-rowid="'+rowid+'" '+
     ' data-id="'+id+'" />'+
     '<img src="'+url+'"/></button>';
@@ -318,6 +327,15 @@ DBTableEditor.afterLoadDataHandler = function(data){
   jQuery(".status .loading").hide();
 };
 
+// copied from slick.grid#L1502 for debugging
+DBTableEditor.defaultFormatter = function (row, cell, value, columnDef, dataContext){
+  if (value == null) {
+    return "";
+  } else {
+    return (value + "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+};
+
 DBTableEditor.afterLoadData = function(){
   var opts = DBTableEditor.options;
   var rows = DBTableEditor.data.rows;
@@ -386,12 +404,7 @@ DBTableEditor.afterLoadData = function(){
     console.log('Couldnt find a column:', DBTableEditor.id_column," defaulting to noedit");
     DBTableEditor.noedit = true;
   }
-  if(!DBTableEditor.noedit){
-    //console.log('Adding buttons column', DBTableEditor.buttonColumnWidth);
-    columns.unshift({id: 'buttons',
-                     formatter:DBTableEditor.rowButtonFormatter,
-                     width:DBTableEditor.buttonColumnWidth});
-  }
+
 
   //init rows
   for(var i=0, r ; r=rows[i] ; i++){
@@ -399,8 +412,15 @@ DBTableEditor.afterLoadData = function(){
     var rid = DBTableEditor.newId((columnMap[DBTableEditor.id_column]!=null) && r[columnMap[DBTableEditor.id_column]]);
     // THIS MUST BE named ID in order for slickgrid to work
     r.id = rid;
-    if(!DBTableEditor.noedit) r.push(null);
   }
+  // init columns
+  if(!DBTableEditor.noedit){
+    //console.log('Adding buttons column', DBTableEditor.buttonColumnWidth);
+    columns.unshift({id: 'buttons',
+                     formatter:DBTableEditor.rowButtonFormatter,
+                     width:DBTableEditor.buttonColumnWidth});
+  }
+
 
   var options = {
     enableCellNavigation: true,
@@ -414,7 +434,8 @@ DBTableEditor.afterLoadData = function(){
     headerRowHeight: 30,
     defaultColumnWidth:120,
     explicitInitialization: true,
-    autoHeight:DBTableEditor.autoHeight
+    autoHeight:DBTableEditor.autoHeight,
+    defaultFormatter : DBTableEditor.defaultFormatter
   };
 
   DBTableEditor.columnFilters = jQuery.extend(DBTableEditor.columnFilters,DBTableEditor.query,DBTableEditor.hashQuery);
