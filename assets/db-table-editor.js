@@ -109,7 +109,11 @@ DBTableEditor.save = function(){
   }
   //console.log('trying to save: ', toSave);
   var cols = DBTableEditor.data.columns.map(function(c){return c.originalName;});
-  cols.shift(); // remove buttons
+
+  if(!DBTableEditor.nodelete) {
+    cols.shift(); // remove buttons
+  }
+
   var toSend = JSON.stringify({
     modifiedIdxs:toSave.map(function(it){return it.modifiedIdxs;}),
     columns:cols,
@@ -414,7 +418,7 @@ DBTableEditor.afterLoadData = function(){
     r.id = rid;
   }
   // init columns
-  if(!DBTableEditor.noedit){
+  if(!DBTableEditor.nodelete){
     //console.log('Adding buttons column', DBTableEditor.buttonColumnWidth);
     columns.unshift({id: 'buttons',
                      formatter:DBTableEditor.rowButtonFormatter,
@@ -426,7 +430,7 @@ DBTableEditor.afterLoadData = function(){
     enableCellNavigation: true,
     enableColumnReorder: true,
     editable: !DBTableEditor.noedit,
-    enableAddRow: !DBTableEditor.noedit,
+    enableAddRow: !DBTableEditor.noinsert,
     multiColumnSort:true,
     autoEdit:false,
     editCommandHandler: DBTableEditor.queueAndExecuteCommand,

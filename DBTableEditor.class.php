@@ -78,7 +78,7 @@ class DBTE_DataTable {
    */
 class DBTableEditor {
   var $table, $title, $sql, $dataFn, $id, $data, $cap, $jsFile, 
-    $noedit, $editcap, $noedit_columns, $hide_columns, $default_values,
+    $noedit, $nodelete, $noinsert, $editcap, $noedit_columns, $hide_columns, $default_values,
       $columnFilters, $columnNameMap, $save_cb, $insert_cb, $update_cb, $delete_cb,
       $id_column, $auto_date, $async_data;
   function __construct($args=null){
@@ -87,6 +87,8 @@ class DBTableEditor {
     if(!$this->id) $this->id = $this->table;
     if(!$this->title) $this->title = $this->table;
     if(!$this->id_column) $this->id_column = 'id';
+    if(is_null($this->nodelete)) $this->nodelete = $this->noedit;
+    if(is_null($this->noinsert)) $this->noinsert = $this->noedit;
     if(!isset($args['auto_date'])) $this->auto_date=true;
   }
   /*
