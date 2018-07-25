@@ -91,6 +91,10 @@ This supports `wp_parse_args` style arguments.
  ** ex: `editcap=>"edit_others_posts"`
  * `noedit`: turns off the editing abilities (same as editcap=nosuchcapability)
  ** ex: `noedit=>true`
+ * `nodelete`: turns off the deleting abilities (Default: value of noedit argument)
+  ** ex: `nodelete=>true`
+ * `noinsert`: turns off the inserting abilities (Default: value of noedit argument)
+   ** ex: `noinsert=>true`
  * `columnFilters`: Default column filters, this is an array of column->val
    to be applied as default column fitlers when the page is loaded
  ** ex: `columnFilters=>Array("Year"=>"2017")`

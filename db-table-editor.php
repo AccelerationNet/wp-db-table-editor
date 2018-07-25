@@ -215,6 +215,8 @@ function dbte_render($id=null){
   }
   $base = plugins_url('wp-db-table-editor');
   $noedit = $cur->noedit;
+  $nodelete = $cur->nodelete;
+  $noinsert = $cur->noinsert;
   $pendingSaveCnt = "";
   $pendingSaveHeader = "";
   $buttons="";
@@ -222,7 +224,8 @@ function dbte_render($id=null){
     $noedit = true;
     $cur->noedit = true;
   }
-  if( !$noedit ){
+
+  if( !$noedit || !$nodelete || !$noinsert){
     $pendingSaveCnt = '<span class="pending-save-count">0</span>';
     $pendingSaveHeader = '<div class="pending-save-header">'.sprintf(__('There are %s unsaved changes', 'wp-db-table-editor'), $pendingSaveCnt).'</div>';
     $saveButtonLabel = sprintf(__('Save %s Changes', 'wp-db-table-editor'), $pendingSaveCnt);
