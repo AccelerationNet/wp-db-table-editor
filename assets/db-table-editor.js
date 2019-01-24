@@ -26,7 +26,10 @@ DBTableEditor.parseQuery = function(query) {
     var vars = query.split('&');
     for (var i = 0; i < vars.length; i++) {
       var pair = vars[i].split('=');
-      obj[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);
+      if(pair[0]){
+        obj[decodeURIComponent(pair[0])]= (pair[1] && decodeURIComponent(pair[1])) || null;
+      }
+
     }
     return obj;
 };
@@ -263,7 +266,13 @@ DBTableEditor.exportCSV = function(){
 
 DBTableEditor.updatePagingInfo = function(){
   var cnt = DBTableEditor.dataView.getPagingInfo()["totalRows"];
-  jQuery('.db-table-editor-row-count').text (sprintf(translations['row_count'], cnt, DBTableEditor.data.rows.length));
+  var max = DBTableEditor.offset + DBTableEditor.data.rows.length;
+  jQuery('.db-table-editor-row-count').text (
+    sprintf(translations['row_count'],
+            cnt, DBTableEditor.offset, max,
+            DBTableEditor.data.totalRows));
+  jQuery('.dbte-page .prev').toggle(DBTableEditor.data.page_idx > 0);
+  jQuery('.dbte-page .next').toggle(max < DBTableEditor.data.totalRows);
 };
 
 DBTableEditor._ids_ ={};
@@ -580,6 +589,26 @@ DBTableEditor.afterLoadData = function(){
   jQuery('button.save').attr("disabled", null);
 };
 
+DBTableEditor.refresh = function dbte_refresh(){
+  newL = window.location.pathname +'?';
+  jQuery.each(DBTableEditor.query, function(k, v){
+    newL+="&"+encodeURIComponent(k)+"=";
+    if(v) newL += encodeURIComponent(v);
+  });
+  window.location = newL;
+}
+
+DBTableEditor.next = function dbte_next(){
+  console.log('Nav to next page');
+  DBTableEditor.query['dbte_page_num'] = Number(DBTableEditor.data.page_idx)+1;
+  DBTableEditor.refresh();
+}
+DBTableEditor.prev = function dbte_prev(){
+  console.log('Nav to prev page');
+  DBTableEditor.query['dbte_page_num'] = Number(DBTableEditor.data.page_idx)-1;
+  DBTableEditor.refresh();
+}
+
 DBTableEditor.onload = function(opts){
   // TODO: switch to objects so there can be more than one table to edit *sigh*
   //console.log('Loading db table');
@@ -599,4 +628,6 @@ DBTableEditor.onload = function(opts){
     jQuery.get(DBTableEditor.dataUrl).then(DBTableEditor.afterLoadDataHandler);
   }
   else return console.log("No Data for DBTableEditor");
+  jQuery('body').on('click', '.dbte-page .prev', DBTableEditor.prev);
+  jQuery('body').on('click', '.dbte-page .next', DBTableEditor.next);
 };

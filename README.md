@@ -120,6 +120,8 @@ This supports `wp_parse_args` style arguments.
  ** Ex:`async_data=>true`
  * `default_values`: an a_array of default values that new rows should have
  ** Ex:`default_values=>Array("name"=>"First M Last")`
+ * `page_size`: The maximum number of results to return (using limit and offset)
+ ** Ex:`page_size=>2000`
 
 Example:
 

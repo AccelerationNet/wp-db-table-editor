@@ -1,3 +1,7 @@
+Version: 1.7.0 - 2019-01-24
+    * Add page_size, and next and previous buttons to page
+      large result sets into manageable chunks
+
 Version: 1.6.1 - 2017-05-15
     * Change export to post to get around URL length restrictions
 

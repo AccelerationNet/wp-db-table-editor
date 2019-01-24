@@ -4,7 +4,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.6.5
+Version: 1.7.0
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 Text Domain: wp-db-table-editor
@@ -38,6 +38,64 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+if ( !function_exists('prep_name') ) {
+  function prep_name($n){
+    $n = str_replace(" ", "_", trim($n));
+    return $n;
+  }
+}
+
+if ( !function_exists('prepped_dict_value') ) {
+  function pdv_names($name){
+    $o = $name;
+    $n = trim($name);
+    return  array(
+      $o, $n,
+      preg_replace('/ /', "_", $n),
+      preg_replace('/-/', "_",$n),
+      preg_replace('/(-|\s)+/', "_",$n)
+    );
+  }
+  function pdv_clean_v($v){
+    $v = trim(strip_tags( rawurldecode($v) ));
+    if($v === "") $v = null;
+    return $v;
+  }
+  function pdv_prep_v($v, $implode=true){
+    if (is_array($v)){
+      foreach($v as $k=>$d){
+        $v[$k]=pdv_clean_v($d);
+      }
+      if($implode) $v = implode(',', $v);
+    }
+    else if (is_string($v)){
+      $v = pdv_clean_v($v);
+    }
+    return $v;
+  }
+  function prepped_dict_value($name, $dict, $implode=true){
+    $names = pdv_names($name);
+    foreach($names as $n){
+      $v = isset($dict[$n]) ? $dict[$n] : null;
+      if($v !== null){
+        $pv = pdv_prep_v($v, $implode);
+        return $pv;
+      }
+    }
+    return null;
+  }
+}
+
+
+if ( !function_exists('rval') ) {
+  // gets a value from the request collection
+  // Duplicated from functions for completeness
+  function rval( $name, $implode=true ){
+    return prepped_dict_value($name, $_REQUEST, $implode);
+  }
+}
+
 
 /* Variables to store the list of configred wp-db-table-editors and 
  * the currently selected instance
@@ -155,7 +213,7 @@ function dbte_scripts($hook){
     $base.'/assets/db-table-editor.js', 
                     array('slick-grid-js', 'jquery', 'json2', 'moment-js', 'dbte-date-editor-js', 'sprintf-js'));
   $translation_array = array(
-    'row_count' => __( 'Showing %d of %d rows - items with unsaved changes are not filtered', 'wp-db-table-editor' ),
+    'row_count' => __( 'Showing %d rows in %d-%d of %d rows - items with unsaved changes are not filtered', 'wp-db-table-editor' ),
     'confirm_delete_row' => __( 'Are you sure you wish to remove this row', 'wp-db-table-editor' ),
     'delete_button' => __( 'Delete this Row', 'wp-db-table-editor' )
   );
@@ -253,7 +311,7 @@ EOT;
   $loadingLabel = __('Loading data...', 'wp-db-table-editor');
   $exportButtonLabel = __('Export to CSV', 'wp-db-table-editor');
   $clearFiltersButtonLabel = __('Clear Filters', 'wp-db-table-editor');
-  $rowCountLabel = __('Showing 0 of 0 rows', 'wp-db-table-editor');
+  $rowCountLabel = __('Showing 0 rows in 0-0 of 0 rows', 'wp-db-table-editor');
   $confirmationMessage = __('You have unsaved data, are you sure you want to quit', 'wp-db-table-editor');
   $o = <<<EOT
   <div class="dbte-page">
@@ -273,6 +331,8 @@ EOT;
     $buttons
     </div>
     <div class="db-table-editor-row-count" >$rowCountLabel</div>
+    <button class="prev">← prev</button>
+    <button class="next">next →</button>
     <div class="db-table-editor"></div>
     <script type="text/javascript">
 jQuery(function(){
@@ -319,6 +379,8 @@ function dbte_menu(){
 }
 add_action('admin_menu', 'dbte_menu');
 
+
+
 /*
  * A page for the main menu. Currently just has links to each interface
  * and a bit of explanitory text
@@ -326,8 +388,8 @@ add_action('admin_menu', 'dbte_menu');
 function dbte_main_page(){
   global $DBTE_INSTANCES;
   $pluginDescription = sprintf(__('This plugin allows viewing, editing, and exporting of database tables in your wordpress database through the admin interface.  See the %sREADME.md%s for information on configuring this plugin.', 'wp-db-table-editor'),
-    '<a href="https://github.com/AccelerationNet/wp-db-table-editor/blob/master/README.md">',
-    '</a>');
+                               '<a href="https://github.com/AccelerationNet/wp-db-table-editor/blob/master/README.md">',
+                               '</a>');
   $configuredDBTablesTitle = __('Configured Database Tables', 'wp-db-table-editor');
   echo <<<EOT
 <h2>DB Table Editor</h2>
@@ -353,16 +415,16 @@ EOT;
 add_action( 'wp_ajax_dbte_data', 'dbte_get_data' );
 add_action( 'wp_ajax_no_priv_dbte_data', 'dbte_get_data' );
 function dbte_get_data(){
-  $tbl= $_REQUEST['table'];
+  $tbl= rval('table');
   $cur = dbte_current($tbl);
   if(!$cur) return;
   $cap = $cur->cap;
   // shouldnt be null, but lets be defensive
   if(!$cap) $cap = 'edit_others_posts';
   if(!current_user_can($cap)){
-      header('HTTP/1.0 403 Forbidden');
-      echo 'You are forbidden!';
-      die();
+    header('HTTP/1.0 403 Forbidden');
+    echo 'You are forbidden!';
+    die();
   }
   $data = dbte_get_data_table();
   header('Content-type: application/json');
@@ -376,8 +438,8 @@ function dbte_get_data(){
 add_action( 'wp_ajax_dbte_save', 'dbte_save_cb' );
 function dbte_save_cb() {
   global $wpdb; // this is how you get access to the database
-  $d = $_REQUEST['data'];
-  $tbl= $_REQUEST['table'];
+  $d = rval('data');
+  $tbl= rval('table');
   $cur = dbte_current($tbl);
   if(!$cur) return;
   if($cur->noedit || ($cur->editcap && !current_user_can($cur->editcap))) return;
@@ -481,8 +543,8 @@ function dbte_save_cb() {
  */
 function dbte_delete_cb(){
   global $wpdb;
-  $id = $_REQUEST['dataid'];
-  $tbl= $_REQUEST['table'];
+  $id = rval('dataid');
+  $tbl= rval('table');
   $cur = dbte_current($tbl);
   if(!$cur) return;
   if($cur->noedit || ($cur->editcap && !current_user_can($cur->editcap))) return;
@@ -540,11 +602,11 @@ function x8_fputcsv($filePointer,$dataArray,$delimiter,$enclosure){
  */
 function dbte_export_csv(){
   global $wpdb;
-  $cur = dbte_current(@$_REQUEST['table']);
+  $cur = dbte_current(rval('table'));
   if(!$cur) return;
   // if($cur->editcap && !current_user_can($cur->editcap)) return;
   $id_col = $cur->id_column;
-  $ids = @$_REQUEST['ids'];
+  $ids = rval('ids');
   $tbl = $cur->table;
   $wheres = Array();
   if($ids){
