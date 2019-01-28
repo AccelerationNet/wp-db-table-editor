@@ -61,7 +61,7 @@ class DBTE_DataTable {
       if($where){
         $sql = insert_where ($sql, $where);
       }
-      $haslimit = preg_match('/limit\s+\d+/i');
+      $haslimit = preg_match('/limit\s+\d+/i', $sql);
       if(!$haslimit){
         $sql .= ' LIMIT '.$limit.' OFFSET '.$offset;
       }
