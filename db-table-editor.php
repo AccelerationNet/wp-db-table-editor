@@ -4,7 +4,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.7.1
+Version: 1.7.2
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 Text Domain: wp-db-table-editor
@@ -273,6 +273,8 @@ function dbte_render($id=null){
   }
   $base = plugins_url('wp-db-table-editor');
   $noedit = $cur->noedit;
+  $nodelete = $cur->nodelete;
+  $noinsert = $cur->noinsert;
   $pendingSaveCnt = "";
   $pendingSaveHeader = "";
   $buttons="";
@@ -280,7 +282,8 @@ function dbte_render($id=null){
     $noedit = true;
     $cur->noedit = true;
   }
-  if( !$noedit ){
+
+  if( !$noedit || !$nodelete || !$noinsert){
     $pendingSaveCnt = '<span class="pending-save-count">0</span>';
     $pendingSaveHeader = '<div class="pending-save-header">'.sprintf(__('There are %s unsaved changes', 'wp-db-table-editor'), $pendingSaveCnt).'</div>';
     $saveButtonLabel = sprintf(__('Save %s Changes', 'wp-db-table-editor'), $pendingSaveCnt);
