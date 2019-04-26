@@ -57,7 +57,7 @@ class DBTE_DataTable {
     $offset = $this->page_size * $this->page_idx;
     
     if($sql){
-      $sql = preg_replace('/SELECT/i', 'SELECT SQL_CALC_FOUND_ROWS', $sql);
+      $sql = preg_replace('/SELECT/i', 'SELECT SQL_CALC_FOUND_ROWS', $sql, 1);
       if($where){
         $sql = insert_where ($sql, $where);
       }
