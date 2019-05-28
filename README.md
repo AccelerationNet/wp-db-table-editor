@@ -4,7 +4,7 @@ Contributers: bobbysmith007
 Donate link: https://www.acceleration.net/programming/donate-to-acceleration-net/
 Tags: admin screens, database, editor
 Requires at least: 3.0.0
-Tested Up To: 5.1.1
+Tested Up To: 4.2.2
 Stable tag: trunk
 License: BSD
 URL: https://github.com/AccelerationNet/wp-db-table-editor/
@@ -91,10 +91,6 @@ This supports `wp_parse_args` style arguments.
  ** ex: `editcap=>"edit_others_posts"`
  * `noedit`: turns off the editing abilities (same as editcap=nosuchcapability)
  ** ex: `noedit=>true`
- * `nodelete`: turns off the deleting abilities (Default: value of noedit argument)
-  ** ex: `nodelete=>true`
- * `noinsert`: turns off the inserting abilities (Default: value of noedit argument)
-   ** ex: `noinsert=>true`
  * `columnFilters`: Default column filters, this is an array of column->val
    to be applied as default column fitlers when the page is loaded
  ** ex: `columnFilters=>Array("Year"=>"2017")`
@@ -124,8 +120,6 @@ This supports `wp_parse_args` style arguments.
  ** Ex:`async_data=>true`
  * `default_values`: an a_array of default values that new rows should have
  ** Ex:`default_values=>Array("name"=>"First M Last")`
- * `page_size`: The maximum number of results to return (using limit and offset)
- ** Ex:`page_size=>2000`
 
 Example:
 
