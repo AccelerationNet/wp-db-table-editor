@@ -98,6 +98,9 @@ This supports `wp_parse_args` style arguments.
   * Ex:`async_data=>true`
  * `default_values`: an a_array of default values that new rows should have
   * Ex:`default_values=>Array("name"=>"First M Last")`
+ * `export_id_field`: the field to use when limiting the export results
+  * some sql needs a specific field - defaults to `table`.`id_col`
+  * Ex:`"export_id_field"=>"mytbl.fooid"`
 
 Example:
 

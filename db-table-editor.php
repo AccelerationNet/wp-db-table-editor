@@ -4,7 +4,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.6.5
+Version: 1.6.6
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 Text Domain: wp-db-table-editor
@@ -552,6 +552,8 @@ function dbte_export_csv(){
   $id_col = $cur->id_column;
   $ids = @$_REQUEST['ids'];
   $tbl = $cur->table;
+  $exidf = $cur->export_id_field;
+  if(!$exidf) $exidf = "$tbl.$id_col";
   $wheres = Array();
   if($ids){
     $ids = explode(',', $ids);
@@ -559,7 +561,8 @@ function dbte_export_csv(){
     // ensures that our sql is ok / escaped
     foreach($ids as $idx=>$id){$ids[$idx] = intval($id);}
     $ids = implode(', ', $ids);
-    $wheres[] = " $tbl.$id_col in ( $ids ) ";
+    
+    $wheres[] = " $exidf in ( $ids ) ";
   }
   $tbl = $cur->table;
   $title = $cur->title;

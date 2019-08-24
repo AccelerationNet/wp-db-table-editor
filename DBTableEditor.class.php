@@ -84,9 +84,10 @@ class DBTE_DataTable {
    */
 class DBTableEditor {
   var $table, $title, $sql, $dataFn, $id, $data, $cap, $jsFile, 
-    $noedit, $editcap, $noedit_columns, $hide_columns, $default_values,
-      $columnFilters, $columnNameMap, $save_cb, $insert_cb, $update_cb, $delete_cb,
-      $id_column, $auto_date, $async_data;
+  $noedit, $editcap, $noedit_columns, $hide_columns, $default_values,
+  $columnFilters, $columnNameMap, $save_cb, $insert_cb, $update_cb, $delete_cb,
+  $export_id_field,
+  $id_column, $auto_date, $async_data;
   function __construct($args=null){
     $args = wp_parse_args($args, array('cap'=>'edit_others_posts'));
     foreach($args as $k => $v) $this->{$k} = $v;
