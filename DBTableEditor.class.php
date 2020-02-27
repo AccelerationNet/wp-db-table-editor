@@ -5,8 +5,8 @@
  * @package wp-db-table-editor
  */
 
-use PHPSQL\Parser;
-use PHPSQL\Creator;
+use PHPSQLParser\PHPSQLParser;
+use PHPSQLParser\PHPSQLCreator;
 
 /*
  * The primary entrypoint to configuring wp-db-table-editor's
@@ -29,10 +29,10 @@ function add_db_table_editor($args=null){
    */
 function insert_where($sql, $where){
   if(is_array($where)) $where = implode(' AND ', $where);
-
-  $sqlparser = new Parser();
-  $sqlcreator = new Creator();
+  $sqlparser = new PHPSQLParser();
+  $sqlcreator = new PHPSQLCreator();
   $parsed = $sqlparser->parse($sql);
+  
   // a bit of a hack because we are abusing the constant node, but whatever
   $whereExp = Array("expr_type"=>"const", "base_expr"=>$where, "sub_tree"=>null);
   if(!@$parsed['WHERE']) $parsed['WHERE'] = Array();
@@ -51,14 +51,27 @@ class DBTE_DataTable {
     $where = @$args['where'];
     if($sql){ 
       if($where){
+        // this has sometimes gone wrong
         $sql = insert_where ($sql, $where);
       }
+      $haslimit = preg_match('/limit\s+\d+/i', $sql);
+      if(!$haslimit){
+        $sql .= ' LIMIT '.$limit.' OFFSET '.$offset;
+      }
+      // error_log("Got sql:\n".$sql);
       $this->rows = $wpdb->get_results($sql, ARRAY_N);
       if($wpdb->last_error){
-        error_log("Failed to query: ".print_r( $no_edit_cols, true));
-        error_log(print_r($up, true));
-        error_log($wpdb->last_error);
-        echo "<div class=\"error\">Query Failed - check your log</div>";
+        error_log("Failed to execute query:\n$sql\nERR:".$wpdb->last_error."\n");
+        return null;
+      }
+      $this->offset = $offset;
+      if(!@$args['columns']){
+        $this->columnNames = $cnames = $wpdb->get_col_info('name');
+        $ctypes = $wpdb->get_col_info('type');
+        $this->columns = Array();
+        for($i=0; $i < count($cnames) ; $i++){
+          $this->columns[]=Array('name'=>$cnames[$i], 'type'=>$ctypes[$i]);
+        }
       }
     }else if(@$args['rows']){
       $this->rows = $args['rows'];
