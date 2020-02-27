@@ -4,7 +4,7 @@
 Plugin Name: DB-table-editor
 Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
-Version: 1.7.3
+Version: 1.8.0
 Author: Russ Tyndall @ Acceleration.net
 Author URI: http://www.acceleration.net
 Text Domain: wp-db-table-editor
@@ -105,7 +105,7 @@ $DBTE_INSTANCES = Array();
 $DBTE_CURRENT = null;
 
 include('SplClassLoader.php');
-$loader = new SplClassLoader('PHPSQL', 'php-sql-parser/src/');
+$loader = new SplClassLoader('PHPSQLParser', 'php-sql-parser/src/');
 $loader->register();
 include('DBTableEditor.class.php');
 

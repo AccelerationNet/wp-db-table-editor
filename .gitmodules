@@ -3,4 +3,4 @@
 	url = git@github.com:AccelerationNet/SlickGrid.git
 [submodule "php-sql-parser"]
 	path = php-sql-parser
-	url = git@github.com:AccelerationNet/php-sql-parser.git
+	url = git@github.com:greenlion/PHP-SQL-Parser.git
