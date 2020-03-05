@@ -117,8 +117,6 @@ function xxx_contacts_save($args){
   $idxs = $args['indexes'];
   $id = $dbte->id;
 
-  $cs = implode($columns, ', ');
-  $is = implode($idxs, ', ');
   $isinsert = $args['id'] === null;
   $subtime = @$vals["submit_time"];
   unset($vals["submit_time"]);
