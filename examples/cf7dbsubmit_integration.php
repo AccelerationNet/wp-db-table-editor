@@ -93,6 +93,16 @@ function xxx_add_tables() {
             'title'=>'More Info Requsts',
             'sql' => xxx_contacts_sql('MoreInfoRequests')),
             $base));
+
+        // If you to show all forms, replace above code with this:
+        /*$fields = xxx_get_form_names();
+        foreach($fields as $f){
+            add_db_table_editor(array_merge(Array(
+                'id'=> $f,
+                'title'=>$f,
+                'sql' => xxx_contacts_sql($f)),
+                $base));
+        }*/
     }
 }
 
@@ -138,4 +148,17 @@ function xxx_contacts_delete($dbte, $id){
   $id = $dbte->id;
   $subtime = @$_REQUEST["submit_time"];
   $wpdb->delete($wpdb->prefix.'cf7dbplugin_submits', array('form_name'=>$id, 'submit_time'=>$subtime));
+}
+
+// Find all the form names from cf7dbplugin_submits table
+function xxx_get_form_names(){
+    global $wpdb;
+
+    $sql=<<<EOT
+    SELECT
+      DISTINCT form_name
+    FROM {$wpdb->prefix}cf7dbplugin_submits
+EOT;
+    $fields = $wpdb->get_col($sql);
+    return $fields;
 }
