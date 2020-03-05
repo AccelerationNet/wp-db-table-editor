@@ -1,4 +1,4 @@
-<?php 
+<?php
 /* This is not a fully runnable example, but should give good examples of
     * working cf7dbsubmit plugin
     * Custom save delete hooks
@@ -44,7 +44,7 @@ EOT;
 
   }
 
-  // Build the final SQL that joins to our table for each field on the 
+  // Build the final SQL that joins to our table for each field on the
   // contact form
   $selects = implode(", ", $selects);
   if($selects) $selects .= ", ";
@@ -125,15 +125,15 @@ function xxx_contacts_save($args){
 
   foreach($vals as $k => $v){
     if($isinsert)
-      $wpdb->insert($wpdb->prefix.'cf7dbplugin_submits',
-          array('field_value'=>$v, 'field_name'=>$k,
+        $wpdb->insert($wpdb->prefix.'cf7dbplugin_submits',
+            array('field_value'=>$v, 'field_name'=>$k,
               'form_name'=>$id, 'submit_time'=>$subtime,
               'field_order'=>array_search($k, $columns)
-          ));
+            ));
 
     // our column was not edited continue
     if(!$isinsert && !in_array(array_search($k, $columns),$idxs)) continue;
-    $rc = $wpdb->update($wpdb->prefix.'cf7dbplugin_submits',
+        $wpdb->update($wpdb->prefix.'cf7dbplugin_submits',
             array('field_value'=>$v),
             array('form_name'=>$id, 'submit_time'=>$subtime,
                   'field_name'=>$k));
