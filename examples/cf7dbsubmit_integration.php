@@ -27,8 +27,8 @@ function xxx_contacts_sql($formname, $wheres=null, $limit=null){
     ORDER BY field_order ASC
 EOT;
   $fields = $wpdb->get_col($sql);
-  $selects = ARRAY();
-  $joins = ARRAY();
+  $selects = array();
+  $joins = array();
 
   // Do many self joins to the same table to pull up each field as a result column
   foreach($fields as $f){
@@ -78,7 +78,7 @@ add_action( "wp_loaded", 'xxx_add_tables', -10 );
 function xxx_add_tables() {
     global $wpdb;
     if(function_exists('add_db_table_editor')){
-        $base = Array(
+        $base = array(
             'table'=>$wpdb->prefix.'cf7dbplugin_submits',
             'save_cb'=>'xxx_contacts_save',
             'delete_cb'=>'xxx_contacts_delete',
@@ -88,7 +88,7 @@ function xxx_add_tables() {
 
         // Configure the db-table-editor plugin for displaying the results of a single
         // contact form
-        add_db_table_editor(array_merge(Array(
+        add_db_table_editor(array_merge(array(
             'id'=>'MoreInfoRequests',
             'title'=>'More Info Requsts',
             'sql' => xxx_contacts_sql('MoreInfoRequests')),
@@ -97,7 +97,7 @@ function xxx_add_tables() {
         // If you to show all forms, replace above code with this:
         /*$fields = xxx_get_form_names();
         foreach($fields as $f){
-            add_db_table_editor(array_merge(Array(
+            add_db_table_editor(array_merge(array(
                 'id'=> $f,
                 'title'=>$f,
                 'sql' => xxx_contacts_sql($f)),
@@ -128,7 +128,7 @@ function xxx_contacts_save($args){
   foreach($vals as $k => $v){
     if($isinsert)
       $wpdb->insert($wpdb->prefix.'cf7dbplugin_submits',
-          Array('field_value'=>$v, 'field_name'=>$k,
+          array('field_value'=>$v, 'field_name'=>$k,
               'form_name'=>$id, 'submit_time'=>$subtime,
               'field_order'=>array_search($k, $columns)
           ));
