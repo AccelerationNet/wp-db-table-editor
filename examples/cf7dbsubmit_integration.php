@@ -22,7 +22,7 @@ function xxx_contacts_sql($formname, $wheres=null, $limit=null){
   $sql=<<<EOT
     SELECT 
       DISTINCT field_name
-    FROM wp_cf7dbplugin_submits 
+    FROM {$wpdb->prefix}cf7dbplugin_submits 
     WHERE form_name ='$formname' 
     ORDER BY field_order ASC
 EOT;
@@ -36,7 +36,7 @@ EOT;
     $joins[] = <<<EOT
    LEFT JOIN (
      SELECT submit_time, GROUP_CONCAT(DISTINCT field_value SEPARATOR ', ') as field_value
-      FROM wp_cf7dbplugin_submits
+      FROM {$wpdb->prefix}cf7dbplugin_submits
      WHERE form_name='$formname' AND field_name='$f'
      GROUP BY submit_time, form_name, field_name
    ) as `tbl_$f` ON `tbl_$f`.submit_time = submits.submit_time
@@ -57,7 +57,7 @@ EOT;
       SELECT submit_time, (@ROW :=@ROW + 1)  AS row
         FROM (
           SELECT DISTINCT submit_time
-          FROM wp_cf7dbplugin_submits
+          FROM {$wpdb->prefix}cf7dbplugin_submits
           WHERE form_name ='$formname'
         ) as tbl
     ) as submits
@@ -76,9 +76,10 @@ EOT;
 add_action( "wp_loaded", 'xxx_add_tables', -10 );
 
 function xxx_add_tables() {
+    global $wpdb;
     if(function_exists('add_db_table_editor')){
         $base = Array(
-            'table'=>'wp_cf7dbplugin_submits',
+            'table'=>$wpdb->prefix.'cf7dbplugin_submits',
             'save_cb'=>'xxx_contacts_save',
             'delete_cb'=>'xxx_contacts_delete',
             'hide_columns'=>"id",
@@ -116,7 +117,7 @@ function xxx_contacts_save($args){
   foreach($vals as $k => $v){
     // our column was not edited continue
     if(!$isinsert && !in_array(array_search($k, $columns),$idxs)) continue;
-    $rc = $wpdb->update('wp_cf7dbplugin_submits',
+    $rc = $wpdb->update($wpdb->prefix.'cf7dbplugin_submits',
             array('field_value'=>$v),
             array('form_name'=>$id, 'submit_time'=>$subtime,
                   'field_name'=>$k));
@@ -128,5 +129,5 @@ function xxx_contacts_delete($dbte, $id){
   global $wpdb;
   $id = $dbte->id;
   $subtime = @$_REQUEST["submit_time"];
-  $wpdb->delete('wp_cf7dbplugin_submits', array('form_name'=>$id, 'submit_time'=>$subtime));
+  $wpdb->delete($wpdb->prefix.'cf7dbplugin_submits', array('form_name'=>$id, 'submit_time'=>$subtime));
 }
