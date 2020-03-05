@@ -104,6 +104,7 @@ function xxx_contacts_save($args){
   $dbte = $args['table'];
   $columns = $args['columns'];
   $vals = $args['update'];
+  $idxs = $args['indexes'];
   $id = $dbte->id;
 
   $cs = implode($columns, ', ');
