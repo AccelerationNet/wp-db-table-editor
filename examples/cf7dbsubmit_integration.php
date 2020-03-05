@@ -73,22 +73,26 @@ EOT;
 }
 
 
-if(function_exists('add_db_table_editor')){
-  $base = Array(
-    'table'=>'wp_cf7dbplugin_submits',
-    'save_cb'=>'xxx_contacts_save',
-    'delete_cb'=>'xxx_contacts_delete',
-    'hide_columns'=>"id",
-    'cap'=>"edit_others_posts",
-    'noedit_columns'=>'Submitted Login,Submitted From,Submit Time');
+add_action( "wp_loaded", 'xxx_add_tables', -10 );
 
-  // Configure the db-table-editor plugin for displaying the results of a single 
-  // contact form
-  add_db_table_editor(array_merge(Array(
-      'id'=>'MoreInfoRequests',
-      'title'=>'More Info Requsts',
-      'sql' => xxx_contacts_sql('MoreInfoRequests')),
-    $base));
+function xxx_add_tables() {
+    if(function_exists('add_db_table_editor')){
+        $base = Array(
+            'table'=>'wp_cf7dbplugin_submits',
+            'save_cb'=>'xxx_contacts_save',
+            'delete_cb'=>'xxx_contacts_delete',
+            'hide_columns'=>"id",
+            'cap'=>"edit_others_posts",
+            'noedit_columns'=>'Submitted Login,Submitted From,Submit Time');
+
+        // Configure the db-table-editor plugin for displaying the results of a single
+        // contact form
+        add_db_table_editor(array_merge(Array(
+            'id'=>'MoreInfoRequests',
+            'title'=>'More Info Requsts',
+            'sql' => xxx_contacts_sql('MoreInfoRequests')),
+            $base));
+    }
 }
 
 // When inserting a new row, we need to convert it from a row
