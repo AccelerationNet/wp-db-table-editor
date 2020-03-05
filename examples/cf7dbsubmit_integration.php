@@ -46,9 +46,9 @@ EOT;
 
   // Build the final SQL that joins to our table for each field on the 
   // contact form
-  $selects = implode($selects, ", ");
+  $selects = implode(", ", $selects);
   if($selects) $selects .= ", ";
-  $joins = implode($joins, "\n");
+  $joins = implode("\n", $joins);
   $sql = <<<EOT
     SELECT  FROM_UNIXTIME(submits.submit_time) `Submit Time`, $selects rc as id, submits.submit_time
     FROM (
