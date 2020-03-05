@@ -116,6 +116,13 @@ function xxx_contacts_save($args){
   if($isinsert) $subtime = function_exists('microtime') ? microtime(true) : time();
 
   foreach($vals as $k => $v){
+    if($isinsert)
+      $wpdb->insert($wpdb->prefix.'cf7dbplugin_submits',
+          Array('field_value'=>$v, 'field_name'=>$k,
+              'form_name'=>$id, 'submit_time'=>$subtime,
+              'field_order'=>array_search($k, $columns)
+          ));
+
     // our column was not edited continue
     if(!$isinsert && !in_array(array_search($k, $columns),$idxs)) continue;
     $rc = $wpdb->update($wpdb->prefix.'cf7dbplugin_submits',
