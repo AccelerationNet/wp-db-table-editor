@@ -1,4 +1,4 @@
-<?php 
+<?php
 /* This is not a fully runnable example, but should give good examples of
     * working cf7dbsubmit plugin
     * Custom save delete hooks
@@ -22,13 +22,13 @@ function xxx_contacts_sql($formname, $wheres=null, $limit=null){
   $sql=<<<EOT
     SELECT 
       DISTINCT field_name
-    FROM wp_cf7dbplugin_submits 
+    FROM {$wpdb->prefix}cf7dbplugin_submits 
     WHERE form_name ='$formname' 
     ORDER BY field_order ASC
 EOT;
   $fields = $wpdb->get_col($sql);
-  $selects = ARRAY();
-  $joins = ARRAY();
+  $selects = array();
+  $joins = array();
 
   // Do many self joins to the same table to pull up each field as a result column
   foreach($fields as $f){
@@ -36,7 +36,7 @@ EOT;
     $joins[] = <<<EOT
    LEFT JOIN (
      SELECT submit_time, GROUP_CONCAT(DISTINCT field_value SEPARATOR ', ') as field_value
-      FROM wp_cf7dbplugin_submits
+      FROM {$wpdb->prefix}cf7dbplugin_submits
      WHERE form_name='$formname' AND field_name='$f'
      GROUP BY submit_time, form_name, field_name
    ) as `tbl_$f` ON `tbl_$f`.submit_time = submits.submit_time
@@ -44,11 +44,11 @@ EOT;
 
   }
 
-  // Build the final SQL that joins to our table for each field on the 
+  // Build the final SQL that joins to our table for each field on the
   // contact form
-  $selects = implode($selects, ", ");
+  $selects = implode(", ", $selects);
   if($selects) $selects .= ", ";
-  $joins = implode($joins, "\n");
+  $joins = implode("\n", $joins);
   $sql = <<<EOT
     SELECT  FROM_UNIXTIME(submits.submit_time) `Submit Time`, $selects rc as id, submits.submit_time
     FROM (
@@ -57,7 +57,7 @@ EOT;
       SELECT submit_time, (@ROW :=@ROW + 1)  AS row
         FROM (
           SELECT DISTINCT submit_time
-          FROM wp_cf7dbplugin_submits
+          FROM {$wpdb->prefix}cf7dbplugin_submits
           WHERE form_name ='$formname'
         ) as tbl
     ) as submits
@@ -73,22 +73,37 @@ EOT;
 }
 
 
-if(function_exists('add_db_table_editor')){
-  $base = Array(
-    'table'=>'wp_cf7dbplugin_submits',
-    'save_cb'=>'xxx_contacts_save',
-    'delete_cb'=>'xxx_contacts_delete',
-    'hide_columns'=>"id",
-    'cap'=>"edit_others_posts",
-    'noedit_columns'=>'Submitted Login,Submitted From,Submit Time');
+add_action( "wp_loaded", 'xxx_add_tables', -10 );
 
-  // Configure the db-table-editor plugin for displaying the results of a single 
-  // contact form
-  add_db_table_editor(array_merge(Array(
-      'id'=>'MoreInfoRequests',
-      'title'=>'More Info Requsts',
-      'sql' => xxx_contacts_sql('MoreInfoRequests')),
-    $base));
+function xxx_add_tables() {
+    global $wpdb;
+    if(function_exists('add_db_table_editor')){
+        $base = array(
+            'table'=>$wpdb->prefix.'cf7dbplugin_submits',
+            'save_cb'=>'xxx_contacts_save',
+            'delete_cb'=>'xxx_contacts_delete',
+            'hide_columns'=>"id",
+            'cap'=>"edit_others_posts",
+            'noedit_columns'=>'Submitted Login,Submitted From,Submit Time');
+
+        // Configure the db-table-editor plugin for displaying the results of a single
+        // contact form
+        add_db_table_editor(array_merge(array(
+            'id'=>'MoreInfoRequests',
+            'title'=>'More Info Requsts',
+            'sql' => xxx_contacts_sql('MoreInfoRequests')),
+            $base));
+
+        // If you to show all forms, replace above code with this:
+        /*$fields = xxx_get_form_names();
+        foreach($fields as $f){
+            add_db_table_editor(array_merge(array(
+                'id'=> $f,
+                'title'=>$f,
+                'sql' => xxx_contacts_sql($f)),
+                $base));
+        }*/
+    }
 }
 
 // When inserting a new row, we need to convert it from a row
@@ -99,10 +114,9 @@ function xxx_contacts_save($args){
   $dbte = $args['table'];
   $columns = $args['columns'];
   $vals = $args['update'];
+  $idxs = $args['indexes'];
   $id = $dbte->id;
 
-  $cs = implode($columns, ', ');
-  $is = implode($idxs, ', ');
   $isinsert = $args['id'] === null;
   $subtime = @$vals["submit_time"];
   unset($vals["submit_time"]);
@@ -110,9 +124,16 @@ function xxx_contacts_save($args){
   if($isinsert) $subtime = function_exists('microtime') ? microtime(true) : time();
 
   foreach($vals as $k => $v){
+    if($isinsert)
+        $wpdb->insert($wpdb->prefix.'cf7dbplugin_submits',
+            array('field_value'=>$v, 'field_name'=>$k,
+              'form_name'=>$id, 'submit_time'=>$subtime,
+              'field_order'=>array_search($k, $columns)
+            ));
+
     // our column was not edited continue
     if(!$isinsert && !in_array(array_search($k, $columns),$idxs)) continue;
-    $rc = $wpdb->update('wp_cf7dbplugin_submits',
+        $wpdb->update($wpdb->prefix.'cf7dbplugin_submits',
             array('field_value'=>$v),
             array('form_name'=>$id, 'submit_time'=>$subtime,
                   'field_name'=>$k));
@@ -124,5 +145,18 @@ function xxx_contacts_delete($dbte, $id){
   global $wpdb;
   $id = $dbte->id;
   $subtime = @$_REQUEST["submit_time"];
-  $wpdb->delete('wp_cf7dbplugin_submits', array('form_name'=>$id, 'submit_time'=>$subtime));
+  $wpdb->delete($wpdb->prefix.'cf7dbplugin_submits', array('form_name'=>$id, 'submit_time'=>$subtime));
+}
+
+// Find all the form names from cf7dbplugin_submits table
+function xxx_get_form_names(){
+    global $wpdb;
+
+    $sql=<<<EOT
+    SELECT
+      DISTINCT form_name
+    FROM {$wpdb->prefix}cf7dbplugin_submits
+EOT;
+    $fields = $wpdb->get_col($sql);
+    return $fields;
 }
