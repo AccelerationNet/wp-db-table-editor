@@ -23,7 +23,7 @@ It supports:
  * Filter and Sort results
  * Add, Edit & Delete records
  * Custom buttons extensibility
- * Custom permissions per interface for viewing and editing 
+ * Custom permissions per interface for viewing and editing
    (defaults to: edit_others_posts)
   * editing defaults to the same permission as viewing if not specified
  * CSV exports of filtered grid
@@ -43,7 +43,7 @@ This is installed the same way all wordpress plugins:
 = Adding an interface =
 DB-Table Editor Interfaces are added by calling the
 add_db_table_editor function in your theme's `functions.php` file.
-This supports `wp_parse_args` style arguments. 
+This supports `wp_parse_args` style arguments.
 
  * `title`: what shows up in the H1 on the screen and in menues
   * ex: `title=>"My Product Reports Page"`
@@ -151,9 +151,9 @@ that particular page).
 == Adding an Interface from a plugin ==
 
 If you need to add an interface from a plugin, you should use the
-`admin_menu` action with a lower than default priority.
+`db_table_editor_init` action.
 
-eg: `add_action( 'admin_menu', 'my_load_tables', -10 );`
+eg: `add_action( 'db_table_editor_init', 'my_load_tables' );`
 
 Inside of the `my_load_tables` function you would include all the
 calls to add_db_table_editor
@@ -221,7 +221,7 @@ page.  Please use with care.
 
 == Troubleshooting ==
 
-Feel free to ask support questions / open trouble tickets 
+Feel free to ask support questions / open trouble tickets
 
  * https://wordpress.org/support/plugin/wp-db-table-editor
  * https://github.com/AccelerationNet/wp-db-table-editor/issues
@@ -259,7 +259,7 @@ This is not a fully runnable example, but should give good examples of
 cf7dbsubmit stores its data in a "hashtable" format of:
 
    form, submit_time, field_name, field_value
- 
+
 but we want to present this in a more excel fasion of each field being
 a column of our spreadsheet and each row being a different submission
 
@@ -295,7 +295,7 @@ Version: 1.5.2 - 2015-11-28
 
 Version: 1.5.1 - 2015-09-21
     * Fixed bug with new rows without default values
-    
+
 Version: 1.5 - 2015-09-15
     * replace update & insert call backs and actions with dbte_save
       that passes an argument array instead of list of arguments.
@@ -312,7 +312,7 @@ Version: 1.5 - 2015-09-15
 Version: 1.4.2 - 2015-08-17
     * bug fixes: new rows were not updating their id
     * saving now submits the currently active cell if there is one
-    
+
 Version: 1.4.1 - 2015-06-19
     * added some missing files for translation
 
@@ -338,7 +338,7 @@ Version: 1.2.8 - 2015-02-04 10:30
     * dbte_row_inserted, dbte_row_updated, dbte_row_deleted actions
 
 
- 
+
 
 
 == Contributers and Thanks ==
