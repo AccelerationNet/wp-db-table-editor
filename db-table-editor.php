@@ -2,7 +2,7 @@
 
 /*
 Plugin Name: DB-table-editor
-Plugin URI: http://github.com/AcceleratioNet/wp-db-table-editor
+Plugin URI: https://github.com/AccelerationNet/wp-db-table-editor
 Description: A plugin that adds "tools" pages to edit database tables
 Version: 1.8.0
 Author: Russ Tyndall @ Acceleration.net
